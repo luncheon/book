@@ -207,6 +207,8 @@ The `approve` method will be similar to the `request_review` method: it will
 set `state` to the value that the current state says it should have when that
 state is approved, as shown in Listing 17-16:
 
+> `approve` メソッドは `request_review` メソッドと似ています: 承認されたときに持つべき値を `state` に設定します。 → リスト17-16
+
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust,noplayground
@@ -219,6 +221,8 @@ state is approved, as shown in Listing 17-16:
 We add the `approve` method to the `State` trait and add a new struct that
 implements `State`, the `Published` state.
 
+> `State` トレイトに `approve` メソッドを追加し、 `State` を実装した新しい構造体 `Published` を追加しています。
+
 Similar to `request_review`, if we call the `approve` method on a `Draft`, it
 will have no effect because it will return `self`. When we call `approve` on
 `PendingReview`, it returns a new, boxed instance of the `Published` struct.
@@ -226,9 +230,13 @@ The `Published` struct implements the `State` trait, and for both the
 `request_review` method and the `approve` method, it returns itself, because
 the post should stay in the `Published` state in those cases.
 
+> `request_review` と同様に、 `Draft` に対して `approve` メソッドを呼び出しても `self` を返すだけで何の効果もありません。 `PendingReview` に対して `approve` を呼び出すと、 `Published` 構造体のボックス化された新しいインスタンスが返されます。 `Published` 構造体は `State` トレイトを実装しており、 `request_review` メソッドと `approve` メソッドの両方で `self` を返します。
+
 Now we need to update the `content` method on `Post`: if the state is
 `Published`, we want to return the value in the post’s `content` field;
 otherwise, we want to return an empty string slice, as shown in Listing 17-17:
+
+> 今度は `Post` の `content` メソッドを更新する必要があります: 状態が `Published` であれば post の `content` フィールドの値を、そうでなければ空の文字列スライスを返したいです。 → リスト17-17
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -244,11 +252,15 @@ Because the goal is to keep all these rules inside the structs that implement
 instance (that is, `self`) as an argument. Then we return the value that is
 returned from using the `content` method on the `state` value.
 
+> 目標は、これらのルールをすべて `State` を実装する構造体群の中にしまい込むことです。なので、 `state` の `content` メソッドを呼び出し、引数として post インスタンス（すなわち `self`）を渡します。そして、 `state` の `content` メソッドで返ってきた値を返します。
+
 We call the `as_ref` method on the `Option` because we want a reference to the
 value inside the `Option` rather than ownership of the value. Because `state`
 is an `Option<Box<dyn State>>`, when we call `as_ref`, an `Option<&Box<dyn State>>` is
 returned. If we didn’t call `as_ref`, we would get an error because we can’t
 move `state` out of the borrowed `&self` of the function parameter.
+
+> `Option` の中の値の所有権ではなく参照がほしいので、 `Option` の `as_ref` メソッドを呼び出します（訳注: [`as_ref: &Option<T> -> Option<&T>`](https://doc.rust-lang.org/std/option/enum.Option.html#method.as_ref)）。 `state` は `Option<Box<dyn State>>` なので、 `as_ref` を呼び出すと `Option<&Box<dyn State>>` が返ってきます。借用した引数 `&self` では `state` をムーブできないので、 `as_ref` を呼ばなければエラーになるでしょう。
 
 We then call the `unwrap` method, which we know will never panic, because we
 know the methods on `Post` ensure that `state` will always contain a `Some`
@@ -258,12 +270,16 @@ Compiler”][more-info-than-rustc]<!-- ignore --> section of Chapter 9 when we
 know that a `None` value is never possible, even though the compiler isn’t able
 to understand that.
 
+> それから `unwrap` メソッドを呼び出しますが、これは決してパニックにならないことがわかっています。なぜなら、 `Post` のメソッドが呼ばれるときには、 `state` が常に `Some` 値を持つことが保証されることを私たちは知っているからです。これは、第9章の「[コンパイラよりもあなたの方が多くの情報を持っている場合][more-info-than-rustc]<!-- ignore -->」で説明した、 `None` になり得ないことが私たちには分かってもコンパイラには分からないケースの一例です。（訳注: だとすれば `Post` の `request_review` と `approve` の実装も `self.state.take().unwrap()` で良いのでは？）
+
 At this point, when we call `content` on the `&Box<dyn State>`, deref coercion will
 take effect on the `&` and the `Box` so the `content` method will ultimately be
 called on the type that implements the `State` trait. That means we need to add
 `content` to the `State` trait definition, and that is where we’ll put the
 logic for what content to return depending on which state we have, as shown in
 Listing 17-18:
+
+> この時点で、 `&Box<dyn State>` の `content` を呼び出すと、参照外し型強制 (deref coercion) が `&` と `Box` に働くので、最終的には `State` トレイトを実装した型に対して `content` メソッドが呼び出されることになります。つまり、 `State` トレイトの定義に `content` を追加する必要があり、状態に応じてどのコンテンツを返すかというロジックをここに置くことになります。 → リスト17-18
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -279,14 +295,20 @@ string slice. That means we don’t need to implement `content` on the `Draft`
 and `PendingReview` structs. The `Published` struct will override the `content`
 method and return the value in `post.content`.
 
+> 空の文字列スライスを返す `content` メソッドのデフォルト実装を追加しています。 `Draft` 構造体と `PendingReview` 構造体に `content` を実装する必要はありません。 `Published` 構造体は `content` メソッドをオーバーライドし、 `post.content` の値を返します。
+
 Note that we need lifetime annotations on this method, as we discussed in
 Chapter 10. We’re taking a reference to a `post` as an argument and returning a
 reference to part of that `post`, so the lifetime of the returned reference is
 related to the lifetime of the `post` argument.
 
+> 第10章で説明したように、このメソッドにはライフタイムアノテーションが必要であることに注意してください。引数として `post` への参照を取り、その `post` のフィールドの参照を返しているので、返される参照の寿命は引数 `post` の寿命に関連付けられます。
+
 And we’re done—all of Listing 17-11 now works! We’ve implemented the state
 pattern with the rules of the blog post workflow. The logic related to the
 rules lives in the state objects rather than being scattered throughout `Post`.
+
+> これでリスト17-11のすべてが動作するようになりました! ブログ記事のワークフローのルールで State パターンを実装しました。ルールに関連するロジックは `Post` 全体に散らばっているのではなく、状態オブジェクトの中にあります。
 
 ### Trade-offs of the State Pattern
 
@@ -297,6 +319,8 @@ way we organized the code, we have to look in only one place to know the
 different ways a published post can behave: the implementation of the `State`
 trait on the `Published` struct.
 
+> Rust でオブジェクト指向の State パターン（状態ごとの post が持つべき各種動作のカプセル化）が実装できることを示しました。 `Post` のメソッドは各種動作について何も知りません。このようにコードを整理すると、公開済み記事のさまざまな動作を知るためには、たった 1 つの場所、すなわち `Published` 構造体の `State` トレイトの実装を見ればよいことになります。
+
 If we were to create an alternative implementation that didn’t use the state
 pattern, we might instead use `match` expressions in the methods on `Post` or
 even in the `main` code that checks the state of the post and changes behavior
@@ -305,9 +329,13 @@ understand all the implications of a post being in the published state! This
 would only increase the more states we added: each of those `match` expressions
 would need another arm.
 
+> State パターンを使わない別の実装を作るなら、 post の状態をチェックして動作を変える場所（`Post` の各メソッド or even `main` コード）で代わりに `match` 式を使うかもしれません。これでは、あちこち調べないと、記事が公開状態であることの意味を完全に理解できません！ これは状態を追加するほど増えていきます: 各 `match` 式に別のアームが必要になります。
+
 With the state pattern, the `Post` methods and the places we use `Post` don’t
 need `match` expressions, and to add a new state, we would only need to add a
 new struct and implement the trait methods on that one struct.
+
+> State パターンでは、 `Post` のメソッドや `Post` を使用する場所に `match` 式は必要ありません。新しい状態を追加するには、新しい構造体を追加して、その構造体にトレイトのメソッドを実装するだけでいいのです。
 
 The implementation using the state pattern is easy to extend to add more
 functionality. To see the simplicity of maintaining code that uses the state
@@ -320,6 +348,13 @@ pattern, try a few of these suggestions:
   Hint: have the state object responsible for what might change about the
   content but not responsible for modifying the `Post`.
 
+> State パターンを用いた実装は、機能を追加するための拡張が容易です。 State パターンを用いたコードのメンテナンスのシンプルさを確認するために、これらの提案をいくつか試してみてください:
+>
+> * post の状態を `PendingReview` から `Draft` に戻す `reject` メソッドを追加する。
+> * 状態を `Published` に変更する前に `approve` の呼び出しを 2 回必要にする。
+> * post が `Draft` 状態の時のみ、ユーザーがテキストコンテンツを追加できるようにする。  
+    ヒント: 状態オブジェクトは、コンテンツの変更に責任を持ちますが、 `Post` の変更には責任を持ちません。
+
 One downside of the state pattern is that, because the states implement the
 transitions between states, some of the states are coupled to each other. If we
 add another state between `PendingReview` and `Published`, such as `Scheduled`,
@@ -328,12 +363,16 @@ we would have to change the code in `PendingReview` to transition to
 change with the addition of a new state, but that would mean switching to
 another design pattern.
 
+> State パターンの欠点の 1 つは、状態が状態間の遷移を実装するため、いくつかの状態が互いに結合していることです。もし、 `PendingReview` と `Published` の間に `Scheduled` のような別の状態を追加したら、 `PendingReview` のコードを変更して、代わりに `Scheduled` に遷移させる必要があります。新しい状態を追加しても `PendingReview` を変更せずに済むなら作業は少ないのですが、それだと別のデザインパターンになってしまいます。
+
 Another downside is that we’ve duplicated some logic. To eliminate some of the
 duplication, we might try to make default implementations for the
 `request_review` and `approve` methods on the `State` trait that return `self`;
 however, this would violate object safety, because the trait doesn’t know what
 the concrete `self` will be exactly. We want to be able to use `State` as a
 trait object, so we need its methods to be object safe.
+
+> もう一つの欠点は、いくつかのロジックを重複させてしまったことです。重複をなくすために、 `State` トレイトの `request_review` と `approve` メソッドに `self` を返すデフォルト実装を作ろうとするかもしれません; しかし，これではオブジェクト安全性に反することになります。なぜなら、実体の `self` が何になるのか、トレイトは正確にはわからないからです。 `State` をトレイトオブジェクト（訳注: `dyn State`）として使えるようにしたいので、そのメソッドはオブジェクトセーフにする必要があります（訳注: オブジェクト安全性の詳細は [The Rust Reference 6.11. Traits # Object Safety](https://doc.rust-lang.org/reference/items/traits.html#object-safety) 参照）。
 
 Other duplication includes the similar implementations of the `request_review`
 and `approve` methods on `Post`. Both methods delegate to the implementation of
@@ -342,10 +381,14 @@ value of the `state` field to the result. If we had a lot of methods on `Post`
 that followed this pattern, we might consider defining a macro to eliminate the
 repetition (see the [“Macros”][macros]<!-- ignore --> section in Chapter 19).
 
+> 他の重複としては、 `Post` の `request_review` と `approve` のメソッドの実装が似ていることが挙げられます。どちらのメソッドも `Option` の `state` フィールドの値を同じメソッドの実装に委譲して、 `state` フィールドの新しい値を結果に設定します。このパターンに沿った `Post` 上のメソッドがたくさんあるなら，マクロを定義して繰り返しをなくすことも考えられます（Chapter 19 「[Macros](ch19-06-macros.html#macros)」セクション参照）。
+
 By implementing the state pattern exactly as it’s defined for object-oriented
 languages, we’re not taking as full advantage of Rust’s strengths as we could.
 Let’s look at some changes we can make to the `blog` crate that can make
 invalid states and transitions into compile time errors.
+
+> オブジェクト指向言語のために定義された State パターンを愚直に実装することで、 Rust の強みを最大限に活用できていません。ここでは、無効な状態や遷移をコンパイル時のエラーにするために、 `blog` クレートに加えられる変更を見てみましょう。
 
 #### Encoding States and Behavior as Types
 
@@ -354,6 +397,8 @@ trade-offs. Rather than encapsulating the states and transitions completely so
 outside code has no knowledge of them, we’ll encode the states into different
 types. Consequently, Rust’s type checking system will prevent attempts to use
 draft posts where only published posts are allowed by issuing a compiler error.
+
+> ここでは、 State パターンを再考し、異なるトレードオフを実現する方法を紹介します。状態と遷移を完全にカプセル化して外部のコードがそれを知らないようにするのではなく、状態を異なる型にエンコードします。結果、公開済み記事のみ許可されているところで下書き記事を使おうとすると、 Rust の型チェックシステムがコンパイルエラーを起こして阻止します。
 
 Let’s consider the first part of `main` in Listing 17-11:
 
@@ -373,6 +418,8 @@ display draft post content in production, because that code won’t even compile
 Listing 17-19 shows the definition of a `Post` struct and a `DraftPost` struct,
 as well as methods on each:
 
+> `Post::new` を使った下書き状態での新規記事の作成や、記事のコンテンツにテキストを追加する機能は引き続き有効です。しかし、空文字列を返す `content` メソッドを下書き記事に持たせる代わりに、下書き記事には `content` メソッドを持たせないようにします。そうすれば、下書き記事のコンテンツを取得しようとすると、メソッドが存在しないというコンパイラエラーが発生します。結果として、そのコードはコンパイルされないので、運用時に誤って下書き記事のコンテンツを表示することは不可能です。リスト17-19は、 `Post` 構造体と `DraftPost` 構造体の定義、およびそれぞれのメソッドを示しています:
+
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust,noplayground
@@ -388,16 +435,22 @@ we’re moving the encoding of the state to the types of the structs. The `Post`
 struct will represent a published post, and it has a `content` method that
 returns the `content`.
 
+> `Post` 構造体と `DraftPost` 構造体には、ブログ記事のテキストを格納するプライベートの `content` フィールドがあります。これらの構造体には、もはや `state` フィールドはありません。これは、状態のエンコーディングを構造体の型に移行するためです。 `Post` 構造体は公開済みの記事を表し、 `content` を返す `content` メソッドを持ちます。
+
 We still have a `Post::new` function, but instead of returning an instance of
 `Post`, it returns an instance of `DraftPost`. Because `content` is private
 and there aren’t any functions that return `Post`, it’s not possible to create
 an instance of `Post` right now.
+
+> `Post::new` 関数はありますが、 `Post` のインスタンスを返すのではなく、 `DraftPost` のインスタンスを返します。 `content` は private であり、 `Post` を返す関数もないので、今のところ `Post` のインスタンスは作成できません。
 
 The `DraftPost` struct has an `add_text` method, so we can add text to
 `content` as before, but note that `DraftPost` does not have a `content` method
 defined! So now the program ensures all posts start as draft posts, and draft
 posts don’t have their content available for display. Any attempt to get around
 these constraints will result in a compiler error.
+
+> `DraftPost` 構造体には `add_text` メソッドがあるので、以前のように `content` にテキストを追加することができますが、 `DraftPost` には `content` メソッドが定義されていないことに注意してください！ つまり、このプログラムは、すべての記事が下書き記事として始まること、および下書き記事のコンテンツが画面に表示されないことを保証します。これらの制約を回避しようとすると、コンパイラエラーになります。
 
 #### Implementing Transitions as Transformations into Different Types
 
@@ -408,6 +461,14 @@ these constraints by adding another struct, `PendingReviewPost`, defining the
 `request_review` method on `DraftPost` to return a `PendingReviewPost`, and
 defining an `approve` method on `PendingReviewPost` to return a `Post`, as
 shown in Listing 17-20:
+
+> では、どうすれば公開済み記事を得られるでしょうか？ 公開可能になる前に、下書き記事はレビューと承認を受けなければならないというルールを強制したいです。レビュー待ち状態の記事は、まだコンテンツを表示してはいけません。これらの制約を実装してみましょう。
+>
+> - `PendingReviewPost` という別の構造体を追加する
+> - `DraftPost` の `request_review` メソッドが `PendingReviewPost` を返すようにする
+> - `PendingReviewPost` の `approve` メソッドが `Post` を返すようにする
+>
+> → リスト17-20
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -431,6 +492,8 @@ the `approve` method on a `PendingReviewPost`, and the only way to get a
 `PendingReviewPost` is to call the `request_review` method on a `DraftPost`,
 we’ve now encoded the blog post workflow into the type system.
 
+> `request_review` と `approve` メソッドは、 `self` の所有権を取得し、 `DraftPost` と `PendingReviewPost` のインスタンスを消費して、それぞれ `PendingReviewPost` と公開済みの `Post` に変換します。こうすることで、 `request_review` を呼び出した後に `DraftPost` インスタンスが残ってしまうことがなくなります。 `PendingReviewPost` 構造体には `content` メソッドが定義されていないので、その内容を読み取ろうとすると、 `DraftPost` と同様に、コンパイラエラーになります。 `content` メソッドが定義されている公開された `Post` インスタンスを取得する唯一の方法は、 `PendingReviewPost` の `approve` メソッドを呼び出すことであり、 `PendingReviewPost` を取得する唯一の方法は、 `DraftPost` の `request_review` メソッドを呼び出すことであるため、これでブログ記事のワークフローを型システムにエンコードすることができました。
+
 But we also have to make some small changes to `main`. The `request_review` and
 `approve` methods return new instances rather than modifying the struct they’re
 called on, so we need to add more `let post =` shadowing assignments to save
@@ -438,6 +501,8 @@ the returned instances. We also can’t have the assertions about the draft and
 pending review post’s contents be empty strings, nor do we need them: we can’t
 compile code that tries to use the content of posts in those states any longer.
 The updated code in `main` is shown in Listing 17-21:
+
+> しかし、 `main` にもいくつかの小さな変更を加える必要があります。 `request_review` と `approve` メソッドは、呼び出された構造体を変更するのではなく、新しいインスタンスを返すので、返されたインスタンスを保存するために、 `let post =` のシャドーイング代入を追加する必要があります。また、下書きとレビュー待ちのコンテンツについて、空文字列によるアサーションはできませんし、その必要もありません: これらの状態の記事のコンテンツを使用しようとするコードは、もはやコンパイルできません。 `main` の更新されたコードをリスト17-21に示します:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -456,10 +521,14 @@ now impossible because of the type system and the type checking that happens at
 compile time! This ensures that certain bugs, such as display of the content of
 an unpublished post, will be discovered before they make it to production.
 
+> `post` の再代入のために `main` に加えた変更は、この実装がオブジェクト指向の State パターンに全く従っていないことを意味します: 状態間の変換 (transformations) は、もはや完全には `Post` の実装にカプセル化されていません。しかし、型システムとコンパイル時の型チェックにより、無効な状態が発生し得なくなったのは収穫です! これにより、未公開記事のコンテンツが表示されるなどの特定のバグが、製品化より前に確実に発見されます。
+
 Try the tasks suggested for additional requirements that we mentioned at the
 start of this section on the `blog` crate as it is after Listing 17-20 to see
 what you think about the design of this version of the code. Note that some of
 the tasks might be completed already in this design.
+
+> このセクション冒頭の追加要件提案を、リスト17-20以降の `blog` クレートで試して、このバージョンのコード設計についてどう思うか確認してみてください。なお、いくつかのタスクはこの設計ですでに完了しているかもしれません。
 
 We’ve seen that even though Rust is capable of implementing object-oriented
 design patterns, other patterns, such as encoding state into the type system,
@@ -469,6 +538,8 @@ problem to take advantage of Rust’s features can provide benefits, such as
 preventing some bugs at compile time. Object-oriented patterns won’t always be
 the best solution in Rust due to certain features, like ownership, that
 object-oriented languages don’t have.
+
+> Rust はオブジェクト指向のデザインパターンを実装できるにもかかわらず、型システムに状態をエンコードするような他のパターンも Rust では利用できることを見てきました。これらのパターンには、異なるトレードオフがあります。オブジェクト指向のパターンには慣れているかもしれませんが、 Rust の機能を活用して問題を再考することで、コンパイル時のバグを防ぐことができるなどのメリットがあります。オブジェクト指向言語にはない所有権などの機能があるため、 Rust ではオブジェクト指向パターンが常に最良の解決策になるとは限りません。
 
 ## Summary
 
@@ -482,9 +553,13 @@ object-oriented languages don’t have. An object-oriented pattern won’t alway
 be the best way to take advantage of Rust’s strengths, but is an available
 option.
 
+> この章を読んで、 Rust がオブジェクト指向言語だと思ったかどうかはさておき、 Rust ではトレイトオブジェクトを使っていくつかのオブジェクト指向の機能を得られることがわかったはずです。動的ディスパッチは、実行時のパフォーマンスを少し落とす代わりに、コードに柔軟性を与えることができます。この柔軟性を利用して、コードの保守性を高めるオブジェクト指向パターンを実装することができます。また、 Rust には所有権のような、オブジェクト指向言語にはない機能があります。オブジェクト指向パターンは、 Rust の強みを生かすための最良の方法とは限りませんが、選択肢のひとつです。（訳注: 所有権は機能というより、メモリ安全性の代償として課される制約と見るのが妥当でしょう。所有権を全く意識せずにコードが書けたらどれだけラクでしょうか。）
+
 Next, we’ll look at patterns, which are another of Rust’s features that enable
 lots of flexibility. We’ve looked at them briefly throughout the book but
 haven’t seen their full capability yet. Let’s go!
+
+> 次はパターン（マッチング）を見てみましょう。パターンは Rust の機能の 1 つで、柔軟性に富んでいます。この本ではパターンを簡単に紹介してきましたが、まだその完全な性能を見たわけではありません。 Let's go!
 
 [more-info-than-rustc]: ch09-03-to-panic-or-not-to-panic.html#cases-in-which-you-have-more-information-than-the-compiler
 [macros]: ch19-06-macros.html#macros
