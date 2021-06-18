@@ -665,7 +665,7 @@ Compiler”</a><!-- ignore --> section of Chapter 9 when we
 know that a <code>None</code> value is never possible, even though the compiler isn’t able
 to understand that.</p>
 <blockquote>
-<p>それから <code>unwrap</code> メソッドを呼び出しますが、これは決してパニックにならないことがわかっています。なぜなら、 <code>Post</code> のメソッドが呼ばれるときには、 <code>state</code> が常に <code>Some</code> 値を持つことが保証されることを私たちは知っているからです。これは、第9章の「<a href="ch09-03-to-panic-or-not-to-panic.html#cases-in-which-you-have-more-information-than-the-compiler">コンパイラよりもあなたの方が多くの情報を持っている場合</a><!-- ignore -->」で説明した、 <code>None</code> になり得ないことが私たちには分かってもコンパイラには分からないケースの一例です。（訳注: だとすれば <code>Post</code> の <code>request_review</code> と <code>approve</code> の実装も <code>self.state.take().unwrap()</code> で良いのでは？）</p>
+<p>それから <code>unwrap</code> メソッドを呼び出しますが、これは決してパニックにならないことがわかっています。なぜなら、 <code>Post</code> のメソッドが呼ばれるときには、 <code>state</code> が常に <code>Some</code> 値を持つことが保証されることを私たちは知っているからです（訳注: <code>state</code> が <code>None</code> になるのは <code>request_review</code> と <code>approve</code> の中で <code>self.state.take()</code> してから <code>self.state</code> に再代入するまでの間だけです、いまのところ）。これは、第9章の「<a href="ch09-03-to-panic-or-not-to-panic.html#cases-in-which-you-have-more-information-than-the-compiler">コンパイラよりもあなたの方が多くの情報を持っている場合</a><!-- ignore -->」で説明した、 <code>None</code> になり得ないことが私たちには分かってもコンパイラには分からないケースの一例です。（訳注: だとすれば <code>Post</code> の <code>request_review</code> と <code>approve</code> の実装も <code>self.state.take().unwrap()</code> で良いのでは？）</p>
 </blockquote>
 <p>At this point, when we call <code>content</code> on the <code>&amp;Box&lt;dyn State&gt;</code>, deref coercion will
 take effect on the <code>&amp;</code> and the <code>Box</code> so the <code>content</code> method will ultimately be

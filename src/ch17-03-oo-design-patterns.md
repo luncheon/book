@@ -270,7 +270,7 @@ Compiler”][more-info-than-rustc]<!-- ignore --> section of Chapter 9 when we
 know that a `None` value is never possible, even though the compiler isn’t able
 to understand that.
 
-> それから `unwrap` メソッドを呼び出しますが、これは決してパニックにならないことがわかっています。なぜなら、 `Post` のメソッドが呼ばれるときには、 `state` が常に `Some` 値を持つことが保証されることを私たちは知っているからです。これは、第9章の「[コンパイラよりもあなたの方が多くの情報を持っている場合][more-info-than-rustc]<!-- ignore -->」で説明した、 `None` になり得ないことが私たちには分かってもコンパイラには分からないケースの一例です。（訳注: だとすれば `Post` の `request_review` と `approve` の実装も `self.state.take().unwrap()` で良いのでは？）
+> それから `unwrap` メソッドを呼び出しますが、これは決してパニックにならないことがわかっています。なぜなら、 `Post` のメソッドが呼ばれるときには、 `state` が常に `Some` 値を持つことが保証されることを私たちは知っているからです（訳注: `state` が `None` になるのは `request_review` と `approve` の中で `self.state.take()` してから `self.state` に再代入するまでの間だけです、いまのところ）。これは、第9章の「[コンパイラよりもあなたの方が多くの情報を持っている場合][more-info-than-rustc]<!-- ignore -->」で説明した、 `None` になり得ないことが私たちには分かってもコンパイラには分からないケースの一例です。（訳注: だとすれば `Post` の `request_review` と `approve` の実装も `self.state.take().unwrap()` で良いのでは？）
 
 At this point, when we call `content` on the `&Box<dyn State>`, deref coercion will
 take effect on the `&` and the `Box` so the `content` method will ultimately be
