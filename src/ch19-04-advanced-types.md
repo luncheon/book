@@ -6,11 +6,15 @@ examine why newtypes are useful as types. Then we’ll move on to type aliases, 
 feature similar to newtypes but with slightly different semantics. We’ll also
 discuss the `!` type and dynamically sized types.
 
+> Rust の型システムには、すでに本書で触れたものの、まだ説明していない機能があります。まず、一般的な newtypes について説明し、 newtypes が型として有用である理由を見ていきます。それから、 newtypes と似ていますが、やや異なる意味を持つ type aliases に移ります。また、 `!` 型と動的にサイズ変更される型についても説明します。
+
 ### Using the Newtype Pattern for Type Safety and Abstraction
 
 > Note: This section assumes you’ve read the earlier section [“Using the
 > Newtype Pattern to Implement External Traits on External
 > Types.”][using-the-newtype-pattern]<!-- ignore -->
+>
+> 注意: このセクションでは、前のセクション [「newtype パターンを使って外部の型に外部のトレイトを実装する」][using-the-newtype-pattern] を読んでいることを前提としています。
 
 The newtype pattern is useful for tasks beyond those we’ve discussed so far,
 including statically enforcing that values are never confused and indicating
@@ -20,10 +24,14 @@ values in a newtype. If we wrote a function with a parameter of type
 `Millimeters`, we couldn’t compile a program that accidentally tried to call
 that function with a value of type `Meters` or a plain `u32`.
 
+> newtype パターンは、これまで説明してきたこと以外にも、値が決して混同されないことを静的に保証したり、値の単位を示すのにも役立ちます。リスト19-15では、単位を示すために newtypes を使用する例を見ました。 `Millimeters` と `Meters` 構造体が `u32 `の値を newtype でラップしたことを思い出してください。 `Millimeters` 型のパラメータを持つ関数を書いた場合、誤って `Meters` 型や単なる `u32` 型の値でその関数を呼ぼうとしたプログラムはコンパイルできません。
+
 Another use of the newtype pattern is in abstracting away some implementation
 details of a type: the new type can expose a public API that is different from
 the API of the private inner type if we used the new type directly to restrict
 the available functionality, for example.
+
+> newtype パターンのもうひとつの使い方は、型の実装の詳細を抽象化することです。例えば、利用可能な機能を制限するために new type を使えば、プライベートな内部の型の API とは異なる新しい型の API を外部公開できます。
 
 Newtypes can also hide internal implementation. For example, we could provide a
 `People` type to wrap a `HashMap<i32, String>` that stores a person’s ID
@@ -36,11 +44,15 @@ Hides Implementation
 Details”][encapsulation-that-hides-implementation-details]<!-- ignore -->
 section of Chapter 17.
 
+> newtypes は内部の実装を隠すこともできます。例えば、 ID と名前を関連付けて格納する `HashMap<i32, String>` をラップした `People` 型を提供できます。 `People` を使用するコードは、名前の文字列を `People` コレクションに追加するメソッドなどの公開 API でのみやりとりすることになります。そのコードは、名前に対して `i32` の ID を内部的に割り当てていることを知る必要はありません。 newtype パターンは、実装の詳細を隠すためのカプセル化を実現する軽量な方法で、第17章の [「実装の詳細を隠すカプセル化」][encapsulation-that-hides-implementation-details] のセクションで説明しました。
+
 ### Creating Type Synonyms with Type Aliases
 
 Along with the newtype pattern, Rust provides the ability to declare a *type
 alias* to give an existing type another name. For this we use the `type`
 keyword. For example, we can create the alias `Kilometers` to `i32` like so:
+
+> newtype パターンに加えて、 Rust では既存の型に別の名前を与える *type alias* を宣言する機能があります。これには `type` キーワードを使います。例えば、次のように `i32` へのエイリアス `Kilometers` を作ることができます。
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-04-kilometers-alias/src/main.rs:here}}
@@ -51,6 +63,8 @@ and `Meters` types we created in Listing 19-15, `Kilometers` is not a separate,
 new type. Values that have the type `Kilometers` will be treated the same as
 values of type `i32`:
 
+> これで、エイリアス `Kilometers` は `i32` の *シノニム* になります。リスト19-15で作成した `Millimeters` や `Meters` の型とは異なり、 `Kilometers` は独立した新しい型ではありません。 `Kilometers` 型の値は、 `i32` 型の値と同じように扱われます。
+
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-04-kilometers-alias/src/main.rs:there}}
 ```
@@ -60,8 +74,12 @@ types and we can pass `Kilometers` values to functions that take `i32`
 parameters. However, using this method, we don’t get the type checking benefits
 that we get from the newtype pattern discussed earlier.
 
+> `Kilometers` と `i32` は同じ型なので、双方の型の値を加算でき、 `i32` のパラメータを取る関数に `Kilometers` の値を渡すこともできます。ただし、この方法では、前述の newtype パターンで得られる型チェックのメリットは得られません。
+
 The main use case for type synonyms is to reduce repetition. For example, we
 might have a lengthy type like this:
+
+> 型シノニムの主なユースケースとしては、繰り返しを減らすことが挙げられます。例えば、次のような長い型があるとします。
 
 ```rust,ignore
 Box<dyn Fn() + Send + 'static>
@@ -70,6 +88,8 @@ Box<dyn Fn() + Send + 'static>
 Writing this lengthy type in function signatures and as type annotations all
 over the code can be tiresome and error prone. Imagine having a project full of
 code like that in Listing 19-24.
+
+> このような長い型を関数のシグネチャやコード全体の型アノテーションで書くのは、面倒な上にエラーが起こりやすいものです。リスト19-24のようなコードでいっぱいのプロジェクトを想像してみてください。
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-24/src/main.rs:here}}
@@ -80,6 +100,8 @@ code like that in Listing 19-24.
 A type alias makes this code more manageable by reducing the repetition. In
 Listing 19-25, we’ve introduced an alias named `Thunk` for the verbose type and
 can replace all uses of the type with the shorter alias `Thunk`.
+
+> 型エイリアスは繰り返しを減らし、コードをより管理しやすくします。リスト19-25では、冗長な型に対して `Thunk` という名前のエイリアスを導入し、この型のすべての使用箇所をより短いエイリアス `Thunk` で置き換えています。
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-25/src/main.rs:here}}
@@ -93,6 +115,8 @@ type alias can help communicate your intent as well (*thunk* is a word for code
 to be evaluated at a later time, so it’s an appropriate name for a closure that
 gets stored).
 
+> このコードは読みやすく、書きやすくなりました。型エイリアスに意味のある名前を選ぶことは、意図を伝えるのにも役立ちます（*thunk* は、あとで評価されるコードを表す言葉なので、保存されるクロージャの名前として適切です）。
+
 Type aliases are also commonly used with the `Result<T, E>` type for reducing
 repetition. Consider the `std::io` module in the standard library. I/O
 operations often return a `Result<T, E>` to handle situations when operations
@@ -101,12 +125,16 @@ possible I/O errors. Many of the functions in `std::io` will be returning
 `Result<T, E>` where the `E` is `std::io::Error`, such as these functions in
 the `Write` trait:
 
+> 型エイリアスは、繰り返しを減らすために、 `Result<T, E>` 型でもよく使われます。標準ライブラリの `std::io` モジュールを考えてみましょう。 I/O 操作では、失敗時のハンドリングのために、しばしば `Result<T, E>` を返します。このライブラリには、起こりうる全ての I/O エラーを表現するための `std::io::Error` 構造体があります。 `std::io` の関数の多くが返す `Result<T, E>` の `E` は `std::io::Error` です。例えば `Write` トレイトのこれらの関数がそうです。
+
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-05-write-trait/src/lib.rs}}
 ```
 
 The `Result<..., Error>` is repeated a lot. As such, `std::io` has this type
 alias declaration:
+
+> `Result<..., Error>` は何度も繰り返されます。このため、 `std::io` にはこのような型エイリアス宣言があります。
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-06-result-alias/src/lib.rs:here}}
@@ -117,6 +145,8 @@ qualified alias `std::io::Result<T>`—that is, a `Result<T, E>` with the `E`
 filled in as `std::io::Error`. The `Write` trait function signatures end up
 looking like this:
 
+> この宣言は `std::io` モジュールの中にあるので、私たちは完全修飾のエイリアス `std::io::Result<T>` を使うことができます（`Result<T, E>` の `E` に `std::io::Error` を当てはめた型として）。 `Write` トレイトの関数シグネチャは次のようになります。
+
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-06-result-alias/src/lib.rs:there}}
 ```
@@ -125,6 +155,8 @@ The type alias helps in two ways: it makes code easier to write *and* it gives
 us a consistent interface across all of `std::io`. Because it’s an alias, it’s
 just another `Result<T, E>`, which means we can use any methods that work on
 `Result<T, E>` with it, as well as special syntax like the `?` operator.
+
+> 型エイリアスには 2 つの利点があります: コードを書きやすくすること *and* `std::io` 全体で一貫したインターフェイスを提供することです。これはエイリアスであり、単なるもうひとつの `Result<T, E>` なので、 `Result<T, E>` で動作するすべてのメソッドや `?` 演算子のような特殊な構文を使うことができます。
 
 ### The Never Type that Never Returns
 
