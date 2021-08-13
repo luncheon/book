@@ -230,12 +230,14 @@ value.</p>
 </tbody></table>
 <p>Each variant can be either signed or unsigned and has an explicit size.
 <em>Signed</em> and <em>unsigned</em> refer to whether it’s possible for the number to be
-negative—in other words, whether the number needs to have a sign
-with it (signed) or whether it will only ever be positive and can therefore be
+negative—in other words, whether the number needs to have a sign with it
+(signed) or whether it will only ever be positive and can therefore be
 represented without a sign (unsigned). It’s like writing numbers on paper: when
 the sign matters, a number is shown with a plus sign or a minus sign; however,
 when it’s safe to assume the number is positive, it’s shown with no sign.
-Signed numbers are stored using <a href="https://en.wikipedia.org/wiki/Two%27s_complement">two’s complement</a> representation.</p>
+Signed numbers are stored using <a href="https://en.wikipedia.org/wiki/Two%27s_complement">two’s
+complement</a><!-- ignore -->
+representation.</p>
 <p>Each signed variant can store numbers from -(2<sup>n - 1</sup>) to 2<sup>n -
 1</sup> - 1 inclusive, where <em>n</em> is the number of bits that variant uses. So an
 <code>i8</code> can store numbers from -(2<sup>7</sup>) to 2<sup>7</sup> - 1, which equals
@@ -245,8 +247,10 @@ so a <code>u8</code> can store numbers from 0 to 2<sup>8</sup> - 1, which equals
 program is running on: 64 bits if you’re on a 64-bit architecture and 32 bits
 if you’re on a 32-bit architecture.</p>
 <p>You can write integer literals in any of the forms shown in Table 3-2. Note
-that all number literals except the byte literal allow a type suffix, such as
-<code>57u8</code>, and <code>_</code> as a visual separator, such as <code>1_000</code>.</p>
+that number literals that can be multiple numeric types allow a type suffix,
+such as <code>57u8</code>, to designate the type. Number literals can also use <code>_</code> as a
+visual separator to make the number easier to read, such as <code>1_000</code>, which will
+have the same value as if you had specified <code>1000</code>.</p>
 <p><span class="caption">Table 3-2: Integer Literals in Rust</span></p>
 <table><thead><tr><th>Number literals</th><th>Example</th></tr></thead><tbody>
 <tr><td>Decimal</td><td><code>98_222</code></td></tr>
@@ -256,9 +260,9 @@ that all number literals except the byte literal allow a type suffix, such as
 <tr><td>Byte (<code>u8</code> only)</td><td><code>b'A'</code></td></tr>
 </tbody></table>
 <p>So how do you know which type of integer to use? If you’re unsure, Rust’s
-defaults are generally good choices, and integer types default to <code>i32</code>: this
-type is generally the fastest, even on 64-bit systems. The primary situation in
-which you’d use <code>isize</code> or <code>usize</code> is when indexing some sort of collection.</p>
+defaults are generally good places to start: integer types default to <code>i32</code>.
+The primary situation in which you’d use <code>isize</code> or <code>usize</code> is when indexing
+some sort of collection.</p>
 <blockquote>
 <h5><a class="header" href="#integer-overflow" id="integer-overflow">Integer Overflow</a></h5>
 <p>Let’s say you have a variable of type <code>u8</code> that can hold values between 0 and 255.
@@ -274,10 +278,10 @@ Chapter 9.</p>
 <em>not</em> include checks for integer overflow that cause panics. Instead, if
 overflow occurs, Rust performs <em>two’s complement wrapping</em>. In short, values
 greater than the maximum value the type can hold “wrap around” to the minimum
-of the values the type can hold. In the case of a <code>u8</code>, 256 becomes 0, 257
-becomes 1, and so on. The program won’t panic, but the variable will have a
-value that probably isn’t what you were expecting it to have. Relying on
-integer overflow’s wrapping behavior is considered an error.</p>
+of the values the type can hold. In the case of a <code>u8</code>, the value 256 becomes
+0, the value 257 becomes 1, and so on. The program won’t panic, but the
+variable will have a value that probably isn’t what you were expecting it to
+have. Relying on integer overflow’s wrapping behavior is considered an error.</p>
 <p>To explicitly handle the possibility of overflow, you can use these families
 of methods that the standard library provides on primitive numeric types:</p>
 <ul>
@@ -285,7 +289,7 @@ of methods that the standard library provides on primitive numeric types:</p>
 <li>Return the <code>None</code> value if there is overflow with the <code>checked_*</code> methods</li>
 <li>Return the value and a boolean indicating whether there was overflow with
 the <code>overflowing_*</code> methods</li>
-<li>Saturate at the value's minimum or maximum values with <code>saturating_*</code>
+<li>Saturate at the value’s minimum or maximum values with <code>saturating_*</code>
 methods</li>
 </ul>
 </blockquote>
@@ -308,7 +312,8 @@ more precision.</p>
 <h4><a class="header" href="#numeric-operations" id="numeric-operations">Numeric Operations</a></h4>
 <p>Rust supports the basic mathematical operations you’d expect for all of the
 number types: addition, subtraction, multiplication, division, and remainder.
-The following code shows how you’d use each one in a <code>let</code> statement:</p>
+Integer division rounds down to the nearest integer. The following code shows
+how you’d use each numeric operation in a <code>let</code> statement:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playground"><code class="language-rust">fn main() {
     // addition
@@ -322,6 +327,7 @@ The following code shows how you’d use each one in a <code>let</code> statemen
 
     // division
     let quotient = 56.7 / 32.2;
+    let floored = 2 / 3; // Results in 0
 
     // remainder
     let remainder = 43 % 5;
@@ -415,6 +421,10 @@ want to access. For example:</p>
 <p>This program creates a tuple, <code>x</code>, and then makes new variables for each
 element by using their respective indices. As with most programming languages,
 the first index in a tuple is 0.</p>
+<p>The tuple without any values, <code>()</code>, is a special type that has only one value,
+also written <code>()</code>. The type is called the <em>unit type</em> and the value is called
+the <em>unit value</em>. Expressions implicitly return the unit value if they don’t
+return any other value.</p>
 <h4><a class="header" href="#the-array-type" id="the-array-type">The Array Type</a></h4>
 <p>Another way to have a collection of multiple values is with an <em>array</em>. Unlike
 a tuple, every element of an array must have the same type. Arrays in Rust are
@@ -470,8 +480,9 @@ semicolon, and then the length of the array in square brackets, as shown here:</
 <code>3</code> initially. This is the same as writing <code>let a = [3, 3, 3, 3, 3];</code> but in a
 more concise way.</p>
 <h5><a class="header" href="#accessing-array-elements" id="accessing-array-elements">Accessing Array Elements</a></h5>
-<p>An array is a single chunk of memory allocated on the stack. You can access
-elements of an array using indexing, like this:</p>
+<p>An array is a single chunk of memory of a known, fixed size that can be
+allocated on the stack. You can access elements of an array using indexing,
+like this:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playground"><code class="language-rust">fn main() {
     let a = [1, 2, 3, 4, 5];
@@ -517,7 +528,7 @@ fn main() {
 <p>This code compiles successfully. If you run this code using <code>cargo run</code> and
 enter 0, 1, 2, 3, or 4, the program will print out the corresponding value at
 that index in the array. If you instead enter a number past the end of the
-array, such as 10, you'll see output like this:</p>
+array, such as 10, you’ll see output like this:</p>
 <!-- manual-regeneration
 cd listings/ch03-common-programming-concepts/no-listing-15-invalid-array-access
 cargo run
@@ -528,13 +539,13 @@ note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 </code></pre>
 <p>The program resulted in a <em>runtime</em> error at the point of using an invalid
 value in the indexing operation. The program exited with an error message and
-didn't execute the final <code>println!</code> statement. When you attempt to access an
+didn’t execute the final <code>println!</code> statement. When you attempt to access an
 element using indexing, Rust will check that the index you’ve specified is less
 than the array length. If the index is greater than or equal to the length,
 Rust will panic. This check has to happen at runtime, especially in this case,
-because the compiler can't possibly know what value a user will enter when they
+because the compiler can’t possibly know what value a user will enter when they
 run the code later.</p>
-<p>This is the first example of Rust’s safety principles in action. In many
+<p>This is an example of Rust’s memory safety principles in action. In many
 low-level languages, this kind of check is not done, and when you provide an
 incorrect index, invalid memory can be accessed. Rust protects you against this
 kind of error by immediately exiting instead of allowing the memory access and

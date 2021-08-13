@@ -303,8 +303,8 @@ and <code>1</code>. This is a win for clarity.</p>
 <h3><a class="header" href="#adding-useful-functionality-with-derived-traits" id="adding-useful-functionality-with-derived-traits">Adding Useful Functionality with Derived Traits</a></h3>
 <p>It’d be nice to be able to print an instance of <code>Rectangle</code> while we’re
 debugging our program and see the values for all its fields. Listing 5-11 tries
-using the <code>println!</code> macro as we have used in previous chapters. This won’t
-work, however.</p>
+using the <a href="../std/macro.println.html"><code>println!</code> macro</a><!-- ignore --> as we have used in
+previous chapters. This won’t work, however.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><code class="language-rust ignore does_not_compile">struct Rectangle {
     width: u32,
@@ -352,8 +352,8 @@ see its value while we’re debugging our code.</p>
 </code></pre>
 <p>Rust <em>does</em> include functionality to print out debugging information, but we
 have to explicitly opt in to make that functionality available for our struct.
-To do that, we add the annotation <code>#[derive(Debug)]</code> just before the struct
-definition, as shown in Listing 5-12.</p>
+To do that, we add the outer attribute <code>#[derive(Debug)]</code> just before the
+struct definition, as shown in Listing 5-12.</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
 struct Rectangle {
@@ -370,7 +370,7 @@ fn main() {
     println!(&quot;rect1 is {:?}&quot;, rect1);
 }
 </code></pre></pre>
-<p><span class="caption">Listing 5-12: Adding the annotation to derive the <code>Debug</code>
+<p><span class="caption">Listing 5-12: Adding the attribute to derive the <code>Debug</code>
 trait and printing the <code>Rectangle</code> instance using debug formatting</span></p>
 <p>Now when we run the program, we won’t get any errors, and we’ll see the
 following output:</p>
@@ -394,11 +394,62 @@ rect1 is Rectangle {
     height: 50,
 }
 </code></pre>
-<p>Rust has provided a number of traits for us to use with the <code>derive</code> annotation
-that can add useful behavior to our custom types. Those traits and their
-behaviors are listed in <a href="appendix-03-derivable-traits.html">Appendix C</a><!-- ignore -->. We’ll cover how to
-implement these traits with custom behavior as well as how to create your own
-traits in Chapter 10.</p>
+<p>Another way to print out a value using the <code>Debug</code> format is by using the
+<a href="../std/macro.dbg.html"><code>dbg!</code> macro</a> <!-- ignore -->. The <code>dbg!</code> macro takes ownership of an
+expression, prints the file and line number of where that <code>dbg!</code> macro call
+occurs in your code along with the resulting value of that expression, and
+returns ownership of the value. Calling the <code>dbg!</code> macro prints to the standard
+error console stream (<code>stderr</code>), as opposed to <code>println!</code> which prints to the
+standard output console stream (<code>stdout</code>). We’ll talk more about <code>stderr</code> and
+<code>stdout</code> in the <a href="ch12-06-writing-to-stderr-instead-of-stdout.html">“Writing Error Messages to Standard Error Instead of Standard
+Output” section in Chapter 12</a><!-- ignore -->. Here’s an example where
+we’re interested in the value that gets assigned to the <code>width</code> field, as well
+as the value of the whole struct in <code>rect1</code>:</p>
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+fn main() {
+    let scale = 2;
+    let rect1 = Rectangle {
+        width: dbg!(30 * scale),
+        height: 50,
+    };
+
+    dbg!(&amp;rect1);
+}
+</code></pre></pre>
+<p>We can put <code>dbg!</code> around the expression <code>30 * scale</code> and, because <code>dbg!</code>
+returns ownership of the expression’s value, the <code>width</code> field will get the
+same value as if we didn’t have the <code>dbg!</code> call there. We don’t want <code>dbg!</code> to
+take ownership of <code>rect1</code>, so we use a reference to <code>dbg!</code> in the next call.
+Here’s what the output of this example looks like:</p>
+<pre><code class="language-console">$ cargo run
+   Compiling rectangles v0.1.0 (file:///projects/rectangles)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.61s
+     Running `target/debug/rectangles`
+[src/main.rs:10] 30 * scale = 60
+[src/main.rs:14] &amp;rect1 = Rectangle {
+    width: 60,
+    height: 50,
+}
+</code></pre>
+<p>We can see the first bit of output came from <em>src/main.rs</em> line 10, where we’re
+debugging the expression <code>30 * scale</code>, and its resulting value is 60 (the
+<code>Debug</code> formatting implemented for integers is to print only their value). The
+<code>dbg!</code> call on line 14 of <em>src/main.rs</em> outputs the value of <code>&amp;rect1</code>, which is
+the <code>Rectangle</code> struct. This output uses the pretty <code>Debug</code> formatting of the
+<code>Rectangle</code> type. The <code>dbg!</code> macro can be really helpful when you’re trying to
+figure out what your code is doing!</p>
+<p>In addition to the <code>Debug</code> trait, Rust has provided a number of traits for us
+to use with the <code>derive</code> attribute that can add useful behavior to our custom
+types. Those traits and their behaviors are listed in <a href="appendix-03-derivable-traits.html">Appendix C</a><!--
+ignore -->. We’ll cover how to implement these traits with custom behavior as
+well as how to create your own traits in Chapter 10. There are also many
+attributes other than <code>derive</code>; for more information, see <a href="../reference/attributes.html">the “Attributes”
+section of the Rust Reference</a>.</p>
 <p>Our <code>area</code> function is very specific: it only computes the area of rectangles.
 It would be helpful to tie this behavior more closely to our <code>Rectangle</code>
 struct, because it won’t work with any other type. Let’s look at how we can

@@ -574,8 +574,9 @@ bounds the signature of <code>thread::spawn</code> has on its parameter. The doc
 shows us the following:</p>
 <pre><code class="language-rust ignore">pub fn spawn&lt;F, T&gt;(f: F) -&gt; JoinHandle&lt;T&gt;
     where
-        F: FnOnce() -&gt; T + Send + 'static,
-        T: Send + 'static
+        F: FnOnce() -&gt; T,
+        F: Send + 'static,
+        T: Send + 'static,
 </code></pre>
 <p>The <code>F</code> type parameter is the one we’re concerned with here; the <code>T</code> type
 parameter is related to the return value, and we’re not concerned with that. We
@@ -684,8 +685,9 @@ before returning it. But how do we “store” a thread? Let’s take another lo
 the <code>thread::spawn</code> signature:</p>
 <pre><code class="language-rust ignore">pub fn spawn&lt;F, T&gt;(f: F) -&gt; JoinHandle&lt;T&gt;
     where
-        F: FnOnce() -&gt; T + Send + 'static,
-        T: Send + 'static
+        F: FnOnce() -&gt; T,
+        F: Send + 'static,
+        T: Send + 'static,
 </code></pre>
 <p>The <code>spawn</code> function returns a <code>JoinHandle&lt;T&gt;</code>, where <code>T</code> is the type that the
 closure returns. Let’s try using <code>JoinHandle</code> too and see what happens. In our

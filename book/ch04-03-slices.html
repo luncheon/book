@@ -242,10 +242,10 @@ The first element of the tuple returned from <code>enumerate</code> is the index
 second element is a reference to the element. This is a bit more convenient
 than calculating the index ourselves.</p>
 <p>Because the <code>enumerate</code> method returns a tuple, we can use patterns to
-destructure that tuple, just like everywhere else in Rust. So in the <code>for</code>
-loop, we specify a pattern that has <code>i</code> for the index in the tuple and <code>&amp;item</code>
-for the single byte in the tuple. Because we get a reference to the element
-from <code>.iter().enumerate()</code>, we use <code>&amp;</code> in the pattern.</p>
+destructure that tuple. We'll be discussing patterns more in Chapter 6. So in
+the <code>for</code> loop, we specify a pattern that has <code>i</code> for the index in the tuple
+and <code>&amp;item</code> for the single byte in the tuple. Because we get a reference to the
+element from <code>.iter().enumerate()</code>, we use <code>&amp;</code> in the pattern.</p>
 <p>Inside the <code>for</code> loop, we search for the byte that represents the space by
 using the byte literal syntax. If we find a space, we return the position.
 Otherwise, we return the length of the string by using <code>s.len()</code>:</p>
@@ -328,13 +328,14 @@ in the slice and <code>ending_index</code> is one more than the last position in
 slice. Internally, the slice data structure stores the starting position and
 the length of the slice, which corresponds to <code>ending_index</code> minus
 <code>starting_index</code>. So in the case of <code>let world = &amp;s[6..11];</code>, <code>world</code> would be
-a slice that contains a pointer to the 7th byte (counting from 1) of <code>s</code> with a length value of 5.</p>
+a slice that contains a pointer to the byte at index 6 of <code>s</code> with a length
+value of 5.</p>
 <p>Figure 4-6 shows this in a diagram.</p>
-<img alt="world containing a pointer to the 6th byte of String s and a length 5" src="img/trpl04-06.svg" class="center" style="width: 50%;" />
+<img alt="world containing a pointer to the byte at index 6 of String s and a length 5" src="img/trpl04-06.svg" class="center" style="width: 50%;" />
 <p><span class="caption">Figure 4-6: String slice referring to part of a
 <code>String</code></span></p>
-<p>With Rust’s <code>..</code> range syntax, if you want to start at the first index (zero),
-you can drop the value before the two periods. In other words, these are equal:</p>
+<p>With Rust’s <code>..</code> range syntax, if you want to start at index zero, you can drop
+the value before the two periods. In other words, these are equal:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -461,9 +462,12 @@ To learn more, run the command again with --verbose.
 </code></pre>
 <p>Recall from the borrowing rules that if we have an immutable reference to
 something, we cannot also take a mutable reference. Because <code>clear</code> needs to
-truncate the <code>String</code>, it needs to get a mutable reference. Rust disallows
-this, and compilation fails. Not only has Rust made our API easier to use, but
-it has also eliminated an entire class of errors at compile time!</p>
+truncate the <code>String</code>, it needs to get a mutable reference. The <code>println!</code>
+after the call to <code>clear</code> uses the reference in <code>word</code>, so the immutable
+reference must still be active at that point. Rust disallows the mutable
+reference in <code>clear</code> and the immutable reference in <code>word</code> from existing at the
+same time, and compilation fails. Not only has Rust made our API easier to use,
+but it has also eliminated an entire class of errors at compile time!</p>
 <h4><a class="header" href="#string-literals-are-slices" id="string-literals-are-slices">String Literals Are Slices</a></h4>
 <p>Recall that we talked about string literals being stored inside the binary. Now
 that we know about slices, we can properly understand string literals:</p>
@@ -499,12 +503,17 @@ and <code>&amp;str</code> values.</p>
 </span><span class="boring">fn main() {
 </span><span class="boring">    let my_string = String::from(&quot;hello world&quot;);
 </span><span class="boring">
-</span><span class="boring">    // first_word works on slices of `String`s
+</span><span class="boring">    // `first_word` works on slices of `String`s, whether partial or whole
+</span><span class="boring">    let word = first_word(&amp;my_string[0..6]);
 </span><span class="boring">    let word = first_word(&amp;my_string[..]);
+</span><span class="boring">    // `first_word` also works on references to `String`s, which are equivalent
+</span><span class="boring">    // to whole slices of `String`s
+</span><span class="boring">    let word = first_word(&amp;my_string);
 </span><span class="boring">
 </span><span class="boring">    let my_string_literal = &quot;hello world&quot;;
 </span><span class="boring">
-</span><span class="boring">    // first_word works on slices of string literals
+</span><span class="boring">    // `first_word` works on slices of string literals, whether partial or whole
+</span><span class="boring">    let word = first_word(&amp;my_string_literal[0..6]);
 </span><span class="boring">    let word = first_word(&amp;my_string_literal[..]);
 </span><span class="boring">
 </span><span class="boring">    // Because string literals *are* string slices already,
@@ -515,9 +524,12 @@ and <code>&amp;str</code> values.</p>
 <p><span class="caption">Listing 4-9: Improving the <code>first_word</code> function by using
 a string slice for the type of the <code>s</code> parameter</span></p>
 <p>If we have a string slice, we can pass that directly. If we have a <code>String</code>, we
-can pass a slice of the entire <code>String</code>. Defining a function to take a string
-slice instead of a reference to a <code>String</code> makes our API more general and useful
-without losing any functionality:</p>
+can pass a slice of the <code>String</code> or a reference to the <code>String</code>. This
+flexibility takes advantage of <em>deref coercions</em>, a feature we will cover in
+the <a href="ch15-02-deref.html#implicit-deref-coercions-with-functions-and-methods">“Implicit Deref Coercions with Functions and
+Methods”</a><!--ignore--> section of Chapter 15. Defining a
+function to take a string slice instead of a reference to a <code>String</code> makes our
+API more general and useful without losing any functionality:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">fn first_word(s: &amp;str) -&gt; &amp;str {
 </span><span class="boring">    let bytes = s.as_bytes();
@@ -534,12 +546,17 @@ without losing any functionality:</p>
 </span>fn main() {
     let my_string = String::from(&quot;hello world&quot;);
 
-    // first_word works on slices of `String`s
+    // `first_word` works on slices of `String`s, whether partial or whole
+    let word = first_word(&amp;my_string[0..6]);
     let word = first_word(&amp;my_string[..]);
+    // `first_word` also works on references to `String`s, which are equivalent
+    // to whole slices of `String`s
+    let word = first_word(&amp;my_string);
 
     let my_string_literal = &quot;hello world&quot;;
 
-    // first_word works on slices of string literals
+    // `first_word` works on slices of string literals, whether partial or whole
+    let word = first_word(&amp;my_string_literal[0..6]);
     let word = first_word(&amp;my_string_literal[..]);
 
     // Because string literals *are* string slices already,

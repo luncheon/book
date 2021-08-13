@@ -179,8 +179,8 @@ modules in depth in the <a href="ch07-02-defining-modules-to-control-scope-and-p
 Privacy”</a><!-- ignore --> section). A <em>package</em> is one or more crates
 that provide a set of functionality. A package contains a <em>Cargo.toml</em> file
 that describes how to build those crates.</p>
-<p>Several rules determine what a package can contain. A package <em>must</em> contain
-zero or one library crates, and no more. It can contain as many binary crates
+<p>Several rules determine what a package can contain. A package can contain
+at most one library crate. It can contain as many binary crates
 as you’d like, but it must contain at least one crate (either library or
 binary).</p>
 <p>Let’s walk through what happens when we create a package. First, we enter the

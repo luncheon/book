@@ -281,8 +281,7 @@ package with our binary depend on the <code>add-one</code> package, that has our
 library. First, we’ll need to add a path dependency on <code>add-one</code> to
 <em>adder/Cargo.toml</em>.</p>
 <p><span class="filename">Filename: adder/Cargo.toml</span></p>
-<pre><code class="language-toml">[dependencies]
-
+<pre><code class="language-toml">
 add-one = { path = &quot;../add-one&quot; }
 </code></pre>
 <p>Cargo doesn’t assume that crates in a workspace will depend on each other, so
@@ -348,8 +347,7 @@ crate:</p>
 * ch07-04-bringing-paths-into-scope-with-the-use-keyword.md
 -->
 <p><span class="filename">Filename: add-one/Cargo.toml</span></p>
-<pre><code class="language-toml">[dependencies]
-rand = &quot;0.8.3&quot;
+<pre><code class="language-toml">rand = &quot;0.8.3&quot;
 </code></pre>
 <p>We can now add <code>use rand;</code> to the <em>add-one/src/lib.rs</em> file, and building the
 whole workspace by running <code>cargo build</code> in the <em>add</em> directory will bring in

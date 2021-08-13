@@ -221,7 +221,7 @@ Chapter 15.</p>
 </span></code></pre></pre>
 <p>The <code>&amp;s1</code> syntax lets us create a reference that <em>refers</em> to the value of <code>s1</code>
 but does not own it. Because it does not own it, the value it points to will
-not be dropped when the reference goes out of scope.</p>
+not be dropped when the reference stops being used.</p>
 <p>Likewise, the signature of the function uses <code>&amp;</code> to indicate that the type of
 the parameter <code>s</code> is a reference. Let’s add some explanatory annotations:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
@@ -238,13 +238,13 @@ the parameter <code>s</code> is a reference. Let’s add some explanatory annota
   // it refers to, nothing happens.
 </code></pre></pre>
 <p>The scope in which the variable <code>s</code> is valid is the same as any function
-parameter’s scope, but we don’t drop what the reference points to when it goes
-out of scope because we don’t have ownership. When functions have references as
-parameters instead of the actual values, we won’t need to return the values in
-order to give back ownership, because we never had ownership.</p>
-<p>We call having references as function parameters <em>borrowing</em>. As in real life,
-if a person owns something, you can borrow it from them. When you’re done, you
-have to give it back.</p>
+parameter’s scope, but we don’t drop what the reference points to when <code>s</code>
+stops being used because we don’t have ownership. When functions have
+references as parameters instead of the actual values, we won’t need to return
+the values in order to give back ownership, because we never had ownership.</p>
+<p>We call the action of creating a reference <em>borrowing</em>. As in real life, if a
+person owns something, you can borrow it from them. When you’re done, you have
+to give it back.</p>
 <p>So what happens if we try to modify something we’re borrowing? Try the code in
 Listing 4-6. Spoiler alert: it doesn’t work!</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
@@ -280,7 +280,7 @@ To learn more, run the command again with --verbose.
 <p>Just as variables are immutable by default, so are references. We’re not
 allowed to modify something we have a reference to.</p>
 <h3><a class="header" href="#mutable-references" id="mutable-references">Mutable References</a></h3>
-<p>We can fix the error in the code from Listing 4-6 with just a small tweak:</p>
+<p>We can fix the error in the code from Listing 4-6 with just a few small tweaks:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playground"><code class="language-rust">fn main() {
     let mut s = String::from(&quot;hello&quot;);
@@ -293,10 +293,11 @@ fn change(some_string: &amp;mut String) {
 }
 </code></pre></pre>
 <p>First, we had to change <code>s</code> to be <code>mut</code>. Then we had to create a mutable
-reference with <code>&amp;mut s</code> and accept a mutable reference with <code>some_string: &amp;mut String</code>.</p>
+reference with <code>&amp;mut s</code> where we call the <code>change</code> function, and update the
+function signature to accept a mutable reference with <code>some_string: &amp;mut String</code>. This makes it very clear that the <code>change</code> function will mutate the
+value it borrows.</p>
 <p>But mutable references have one big restriction: you can have only one mutable
-reference to a particular piece of data in a particular scope. This code will
-fail:</p>
+reference to a particular piece of data at a time. This code will fail:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
 </span>    let mut s = String::from(&quot;hello&quot;);
@@ -328,9 +329,15 @@ error: could not compile `ownership`
 
 To learn more, run the command again with --verbose.
 </code></pre>
-<p>This restriction allows for mutation but in a very controlled fashion. It’s
-something that new Rustaceans struggle with, because most languages let you
-mutate whenever you’d like.</p>
+<p>This error says that this code is invalid because we cannot borrow <code>s</code> as
+mutable more than once at a time. The first mutable borrow is in <code>r1</code> and must
+last until it’s used in the <code>println!</code>, but between the creation of that
+mutable reference and its usage, we tried to create another mutable reference
+in <code>r2</code> that borrows the same data as <code>r1</code>.</p>
+<p>The restriction preventing multiple mutable references to the same data at the
+same time allows for mutation but in a very controlled fashion. It’s something
+that new Rustaceans struggle with, because most languages let you mutate
+whenever you’d like.</p>
 <p>The benefit of having this restriction is that Rust can prevent data races at
 compile time. A <em>data race</em> is similar to a race condition and happens when
 these three behaviors occur:</p>
@@ -395,15 +402,15 @@ who is just reading the data has the ability to affect anyone else’s reading o
 the data.</p>
 <p>Note that a reference’s scope starts from where it is introduced and continues
 through the last time that reference is used. For instance, this code will
-compile because the last usage of the immutable references occurs before the
-mutable reference is introduced:</p>
+compile because the last usage of the immutable references, the <code>println!</code>,
+occurs before the mutable reference is introduced:</p>
 <pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">fn main() {
 </span>    let mut s = String::from(&quot;hello&quot;);
 
     let r1 = &amp;s; // no problem
     let r2 = &amp;s; // no problem
     println!(&quot;{} and {}&quot;, r1, r2);
-    // r1 and r2 are no longer used after this point
+    // variables r1 and r2 will not be used after this point
 
     let r3 = &amp;mut s; // no problem
     println!(&quot;{}&quot;, r3);
@@ -411,7 +418,10 @@ mutable reference is introduced:</p>
 </span></code></pre></pre>
 <p>The scopes of the immutable references <code>r1</code> and <code>r2</code> end after the <code>println!</code>
 where they are last used, which is before the mutable reference <code>r3</code> is
-created. These scopes don’t overlap, so this code is allowed.</p>
+created. These scopes don’t overlap, so this code is allowed. The ability of
+the compiler to tell that a reference is no longer being used at a point before
+the end of the scope is called Non-Lexical Lifetimes (NLL for short), and you
+can read more about it in <a href="https://doc.rust-lang.org/edition-guide/rust-2018/ownership-and-lifetimes/non-lexical-lifetimes.html">The Edition Guide</a>.</p>
 <p>Even though borrowing errors may be frustrating at times, remember that it’s
 the Rust compiler pointing out a potential bug early (at compile time rather
 than at runtime) and showing you exactly where the problem is. Then you don’t

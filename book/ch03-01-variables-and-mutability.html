@@ -172,12 +172,13 @@
                 <div id="content" class="content">
                     <main>
                         <h2><a class="header" href="#variables-and-mutability" id="variables-and-mutability">Variables and Mutability</a></h2>
-<p>As mentioned in Chapter 2, by default variables are immutable. This is one of
-many nudges Rust gives you to write your code in a way that takes advantage of
-the safety and easy concurrency that Rust offers. However, you still have the
-option to make your variables mutable. Let’s explore how and why Rust
-encourages you to favor immutability and why sometimes you might want to opt
-out.</p>
+<p>As mentioned in the <a href="ch02-00-guessing-game-tutorial.html#storing-values-with-variables">“Storing Values with
+Variables”</a><!-- ignore --> section, by default
+variables are immutable. This is one of many nudges Rust gives you to write
+your code in a way that takes advantage of the safety and easy concurrency that
+Rust offers. However, you still have the option to make your variables mutable.
+Let’s explore how and why Rust encourages you to favor immutability and why
+sometimes you might want to opt out.</p>
 <p>When a variable is immutable, once a value is bound to a name, you can’t change
 that value. To illustrate this, let’s generate a new project called <em>variables</em>
 in your <em>projects</em> directory by using <code>cargo new variables</code>.</p>
@@ -202,7 +203,7 @@ error[E0384]: cannot assign twice to immutable variable `x`
   |         -
   |         |
   |         first assignment to `x`
-  |         help: make this binding mutable: `mut x`
+  |         help: consider making this binding mutable: `mut x`
 3 |     println!(&quot;The value of x is: {}&quot;, x);
 4 |     x = 6;
   |     ^^^^^ cannot assign twice to immutable variable
@@ -218,7 +219,7 @@ To learn more, run the command again with --verbose.
 Even though compiler errors can be frustrating, they only mean your program
 isn’t safely doing what you want it to do yet; they do <em>not</em> mean that you’re
 not a good programmer! Experienced Rustaceans still get compiler errors.</p>
-<p>The error message indicates that the cause of the error is that you <code>cannot assign twice to immutable variable x</code>, because you tried to assign a second
+<p>The error message indicates that the cause of the error is that you <code>cannot assign twice to immutable variable `x`</code>, because you tried to assign a second
 value to the immutable <code>x</code> variable.</p>
 <p>It’s important that we get compile-time errors when we attempt to change a
 value that we previously designated as immutable because this very situation
@@ -278,23 +279,28 @@ annotate the type.</p>
 <p>Constants can be declared in any scope, including the global scope, which makes
 them useful for values that many parts of code need to know about.</p>
 <p>The last difference is that constants may be set only to a constant expression,
-not the result of a function call or any other value that could only be
-computed at runtime.</p>
+not the result of a value that could only be computed at runtime.</p>
 <p>Here’s an example of a constant declaration where the constant’s name is
-<code>MAX_POINTS</code> and its value is set to 100,000. (Rust’s naming convention for
-constants is to use all uppercase with underscores between words, and
-underscores can be inserted in numeric literals to improve readability):</p>
+<code>THREE_HOURS_IN_SECONDS</code> and its value is set to the result of multiplying 60
+(the number of seconds in a minute) by 60 (the number of minutes in an hour) by
+3 (the number of hours we want to count in this program):</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>const MAX_POINTS: u32 = 100_000;
+</span>const THREE_HOURS_IN_SECONDS: u32 = 60 * 60 * 3;
 <span class="boring">}
 </span></code></pre></pre>
+<p>Rust’s naming convention for constants is to use all uppercase with underscores
+between words. The compiler is able to evaluate a limited set of operations at
+compile time, which lets us choose to write out this value in a way that’s
+easier to understand and verify, rather than setting this constant to the value
+10,800. See the <a href="../reference/const_eval.html">Rust Reference’s section on constant evaluation</a>
+for more information on what operations can be used when declaring constants.</p>
 <p>Constants are valid for the entire time a program runs, within the scope they
-were declared in, making them a useful choice for values in your application
-domain that multiple parts of the program might need to know about, such as the
-maximum number of points any player of a game is allowed to earn or the speed
-of light.</p>
+were declared in. This property makes constants useful for values in your
+application domain that multiple parts of the program might need to know about,
+such as the maximum number of points any player of a game is allowed to earn or
+the speed of light.</p>
 <p>Naming hardcoded values used throughout your program as constants is useful in
 conveying the meaning of that value to future maintainers of the code. It also
 helps to have only one place in your code you would need to change if the
@@ -304,7 +310,7 @@ hardcoded value needed to be updated in the future.</p>
 Secret Number”</a><!-- ignore -->
 section in Chapter 2, you can declare a new variable with the same name as a
 previous variable. Rustaceans say that the first variable is <em>shadowed</em> by the
-second, which means that the second variable’s value is what appears when the
+second, which means that the second variable’s value is what the program sees when the
 variable is used. We can shadow a variable by using the same variable’s name
 and repeating the use of the <code>let</code> keyword as follows:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
@@ -313,21 +319,26 @@ and repeating the use of the <code>let</code> keyword as follows:</p>
 
     let x = x + 1;
 
-    let x = x * 2;
+    {
+        let x = x * 2;
+        println!(&quot;The value of x in the inner scope is: {}&quot;, x);
+    }
 
     println!(&quot;The value of x is: {}&quot;, x);
 }
 </code></pre></pre>
 <p>This program first binds <code>x</code> to a value of <code>5</code>. Then it shadows <code>x</code> by
 repeating <code>let x =</code>, taking the original value and adding <code>1</code> so the value of
-<code>x</code> is then <code>6</code>. The third <code>let</code> statement also shadows <code>x</code>, multiplying the
-previous value by <code>2</code> to give <code>x</code> a final value of <code>12</code>. When we run this
-program, it will output the following:</p>
+<code>x</code> is then <code>6</code>. Then, within an inner scope, the third <code>let</code> statement also
+shadows <code>x</code>, multiplying the previous value by <code>2</code> to give <code>x</code> a value of <code>12</code>.
+When that scope is over, the inner shadowing ends and <code>x</code> returns to being <code>6</code>.
+When we run this program, it will output the following:</p>
 <pre><code class="language-console">$ cargo run
    Compiling variables v0.1.0 (file:///projects/variables)
     Finished dev [unoptimized + debuginfo] target(s) in 0.31s
      Running `target/debug/variables`
-The value of x is: 12
+The value of x in the inner scope is: 12
+The value of x is: 6
 </code></pre>
 <p>Shadowing is different from marking a variable as <code>mut</code>, because we’ll get a
 compile-time error if we accidentally try to reassign to this variable without

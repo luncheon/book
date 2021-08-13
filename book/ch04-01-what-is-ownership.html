@@ -295,10 +295,12 @@ understanding by introducing the <code>String</code> type.</p>
 <h3><a class="header" href="#the-string-type" id="the-string-type">The <code>String</code> Type</a></h3>
 <p>To illustrate the rules of ownership, we need a data type that is more complex
 than the ones we covered in the <a href="ch03-02-data-types.html#data-types">“Data Types”</a><!-- ignore -->
-section of Chapter 3. The types covered previously are all stored on the stack
-and popped off the stack when their scope is over, but we want to look at data
-that is stored on the heap and explore how Rust knows when to clean up that
-data.</p>
+section of Chapter 3. The types covered previously are all a known size, can be
+stored on the stack and popped off the stack when their scope is over, and can
+be quickly and trivially copied to make a new, independent instance if another
+part of code needs to use the same value in a different scope. But we want to
+look at data that is stored on the heap and explore how Rust knows when to
+clean up that data.</p>
 <p>We’ll use <code>String</code> as the example here and concentrate on the parts of <code>String</code>
 that relate to ownership. These aspects also apply to other complex data types,
 whether they are provided by the standard library or created by you. We’ll
@@ -308,10 +310,10 @@ program. String literals are convenient, but they aren’t suitable for every
 situation in which we may want to use text. One reason is that they’re
 immutable. Another is that not every string value can be known when we write
 our code: for example, what if we want to take user input and store it? For
-these situations, Rust has a second string type, <code>String</code>. This type is
-allocated on the heap and as such is able to store an amount of text that is
-unknown to us at compile time. You can create a <code>String</code> from a string literal
-using the <code>from</code> function, like so:</p>
+these situations, Rust has a second string type, <code>String</code>. This type manages
+data allocated on the heap and as such is able to store an amount of text that
+is unknown to us at compile time. You can create a <code>String</code> from a string
+literal using the <code>from</code> function, like so:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -375,9 +377,10 @@ from Listing 4-1 using a <code>String</code> instead of a string literal:</p>
 </span></code></pre></pre>
 <p>There is a natural point at which we can return the memory our <code>String</code> needs
 to the allocator: when <code>s</code> goes out of scope. When a variable goes out of
-scope, Rust calls a special function for us. This function is called <a href="../std/ops/trait.Drop.html#tymethod.drop"><code>drop</code></a>,
-and it’s where the author of <code>String</code> can put the code to return the memory.
-Rust calls <code>drop</code> automatically at the closing curly bracket.</p>
+scope, Rust calls a special function for us. This function is called
+<a href="../std/ops/trait.Drop.html#tymethod.drop"><code>drop</code></a><!-- ignore -->, and it’s where the author of <code>String</code> can put
+the code to return the memory. Rust calls <code>drop</code> automatically at the closing
+curly bracket.</p>
 <blockquote>
 <p>Note: In C++, this pattern of deallocating resources at the end of an item’s
 lifetime is sometimes called <em>Resource Acquisition Is Initialization (RAII)</em>.
@@ -447,10 +450,10 @@ same memory. This is known as a <em>double free</em> error and is one of the mem
 safety bugs we mentioned previously. Freeing memory twice can lead to memory
 corruption, which can potentially lead to security vulnerabilities.</p>
 <p>To ensure memory safety, there’s one more detail to what happens in this
-situation in Rust. Instead of trying to copy the allocated memory, Rust
-considers <code>s1</code> to no longer be valid and, therefore, Rust doesn’t need to free
-anything when <code>s1</code> goes out of scope. Check out what happens when you try to
-use <code>s1</code> after <code>s2</code> is created; it won’t work:</p>
+situation in Rust. After <code>let s2 = s1</code>, Rust considers <code>s1</code> to no longer be
+valid. Therefore, Rust doesn’t need to free anything when <code>s1</code> goes out of
+scope. Check out what happens when you try to use <code>s1</code> after <code>s2</code> is created;
+it won’t work:</p>
 <pre><code class="language-rust ignore does_not_compile"><span class="boring">fn main() {
 </span>    let s1 = String::from(&quot;hello&quot;);
     let s2 = s1;
@@ -602,21 +605,21 @@ similar annotations to those in Listing 4-3.</p>
     let s3 = takes_and_gives_back(s2);  // s2 is moved into
                                         // takes_and_gives_back, which also
                                         // moves its return value into s3
-} // Here, s3 goes out of scope and is dropped. s2 goes out of scope but was
-  // moved, so nothing happens. s1 goes out of scope and is dropped.
+} // Here, s3 goes out of scope and is dropped. s2 was moved, so nothing
+  // happens. s1 goes out of scope and is dropped.
 
 fn gives_ownership() -&gt; String {             // gives_ownership will move its
                                              // return value into the function
                                              // that calls it
 
-    let some_string = String::from(&quot;hello&quot;); // some_string comes into scope
+    let some_string = String::from(&quot;yours&quot;); // some_string comes into scope
 
     some_string                              // some_string is returned and
                                              // moves out to the calling
                                              // function
 }
 
-// takes_and_gives_back will take a String and return one
+// This function takes a String and returns one
 fn takes_and_gives_back(a_string: String) -&gt; String { // a_string comes into
                                                       // scope
 

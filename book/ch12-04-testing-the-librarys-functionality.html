@@ -252,8 +252,10 @@ Pick three.&quot;;
 <p><span class="caption">Listing 12-15: Creating a failing test for the <code>search</code>
 function we wish we had</span></p>
 <p>This test searches for the string <code>&quot;duct&quot;</code>. The text we’re searching is three
-lines, only one of which contains <code>&quot;duct&quot;</code>. We assert that the value returned
-from the <code>search</code> function contains only the line we expect.</p>
+lines, only one of which contains <code>&quot;duct&quot;</code> (Note that the backslash after the
+opening double quote tells Rust not to put a newline character at the beginning
+of the contents of this string literal). We assert that the value returned from
+the <code>search</code> function contains only the line we expect.</p>
 <p>We aren’t able to run this test and watch it fail because the test doesn’t even
 compile: the <code>search</code> function doesn’t exist yet! So now we’ll add just enough
 code to get the test to compile and run by adding a definition of the <code>search</code>
@@ -359,7 +361,7 @@ References with Lifetimes”</a><!-- ignore
 <pre><code class="language-console">$ cargo test
    Compiling minigrep v0.1.0 (file:///projects/minigrep)
     Finished test [unoptimized + debuginfo] target(s) in 0.97s
-     Running target/debug/deps/minigrep-4672b652f7794785
+     Running unittests (target/debug/deps/minigrep-9cd200e5fac0fc94)
 
 running 1 test
 test tests::one_result ... FAILED
@@ -579,14 +581,14 @@ and our test should pass. Let’s run the test:</p>
 <pre><code class="language-console">$ cargo test
    Compiling minigrep v0.1.0 (file:///projects/minigrep)
     Finished test [unoptimized + debuginfo] target(s) in 1.22s
-     Running target/debug/deps/minigrep-4672b652f7794785
+     Running unittests (target/debug/deps/minigrep-9cd200e5fac0fc94)
 
 running 1 test
 test tests::one_result ... ok
 
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
-     Running target/debug/deps/minigrep-4672b652f7794785
+     Running unittests (target/debug/deps/minigrep-9cd200e5fac0fc94)
 
 running 0 tests
 

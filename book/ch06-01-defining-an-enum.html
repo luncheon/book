@@ -308,7 +308,12 @@ variants will have associated <code>String</code> values:</p>
 <span class="boring">}
 </span></code></pre></pre>
 <p>We attach data to each variant of the enum directly, so there is no need for an
-extra struct.</p>
+extra struct. Here it’s also easier to see another detail of how enums work:
+the name of each enum variant that we define also becomes a function that
+constructs an instance of the enum. That is, <code>IpAddr::V4()</code> is a function call
+that takes a <code>String</code> argument and returns an instance of the <code>IpAddr</code> type. We
+automatically get this constructor function defined as a result of defining the
+enum.</p>
 <p>There’s another advantage to using an enum rather than a struct: each variant
 can have different types and amounts of associated data. Version four type IP
 addresses will always have four numeric components that will have values
@@ -375,7 +380,7 @@ different amounts and types of values</span></p>
 <p>This enum has four variants with different types:</p>
 <ul>
 <li><code>Quit</code> has no data associated with it at all.</li>
-<li><code>Move</code> includes an anonymous struct inside it.</li>
+<li><code>Move</code> has named fields like a struct does.</li>
 <li><code>Write</code> includes a single <code>String</code>.</li>
 <li><code>ChangeColor</code> includes three <code>i32</code> values.</li>
 </ul>
@@ -465,8 +470,8 @@ as follows:</p>
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>enum Option&lt;T&gt; {
-    Some(T),
     None,
+    Some(T),
 }
 <span class="boring">}
 </span></code></pre></pre>
@@ -478,8 +483,10 @@ still variants of type <code>Option&lt;T&gt;</code>.</p>
 <p>The <code>&lt;T&gt;</code> syntax is a feature of Rust we haven’t talked about yet. It’s a
 generic type parameter, and we’ll cover generics in more detail in Chapter 10.
 For now, all you need to know is that <code>&lt;T&gt;</code> means the <code>Some</code> variant of the
-<code>Option</code> enum can hold one piece of data of any type. Here are some examples of
-using <code>Option</code> values to hold number types and string types:</p>
+<code>Option</code> enum can hold one piece of data of any type, and that each concrete
+type that gets used in place of <code>T</code> makes the overall <code>Option&lt;T&gt;</code> type a
+different type. Here are some examples of using <code>Option</code> values to hold number
+types and string types:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
 </span>    let some_number = Some(5);
     let some_string = Some(&quot;a string&quot;);
@@ -487,9 +494,13 @@ using <code>Option</code> values to hold number types and string types:</p>
     let absent_number: Option&lt;i32&gt; = None;
 <span class="boring">}
 </span></code></pre></pre>
-<p>If we use <code>None</code> rather than <code>Some</code>, we need to tell Rust what type of
-<code>Option&lt;T&gt;</code> we have, because the compiler can’t infer the type that the <code>Some</code>
-variant will hold by looking only at a <code>None</code> value.</p>
+<p>The type of <code>some_number</code> is <code>Option&lt;i32&gt;</code>. The type of <code>some_string</code> is
+<code>Option&lt;&amp;str&gt;</code>, which is a different type. Rust can infer these types because
+we’ve specified a value inside the <code>Some</code> variant. For <code>absent_number</code>, Rust
+requires us to annotate the overall <code>Option</code> type: the compiler can’t infer the
+type that the corresponding <code>Some</code> variant will hold by looking only at a
+<code>None</code> value. Here, we tell Rust that we mean for <code>absent_number</code> to be of type
+<code>Option&lt;i32&gt;</code>.</p>
 <p>When we have a <code>Some</code> value, we know that a value is present and the value is
 held within the <code>Some</code>. When we have a <code>None</code> value, in some sense, it means
 the same thing as null: we don’t have a valid value. So why is having

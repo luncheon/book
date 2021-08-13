@@ -186,7 +186,7 @@ new <code>search_case_insensitive</code> function and rename our old test from
 <code>one_result</code> to <code>case_sensitive</code> to clarify the differences between the two
 tests, as shown in Listing 12-20.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
-<pre><code class="language-rust noplayground"><span class="boring">use std::error::Error;
+<pre><code class="language-rust ignore does_not_compile"><span class="boring">use std::error::Error;
 </span><span class="boring">use std::fs;
 </span><span class="boring">
 </span><span class="boring">pub struct Config {
@@ -398,7 +398,7 @@ query is.</p>
 <pre><code class="language-console">$ cargo test
    Compiling minigrep v0.1.0 (file:///projects/minigrep)
     Finished test [unoptimized + debuginfo] target(s) in 1.33s
-     Running target/debug/deps/minigrep-4672b652f7794785
+     Running unittests (target/debug/deps/minigrep-9cd200e5fac0fc94)
 
 running 2 tests
 test tests::case_insensitive ... ok
@@ -406,7 +406,7 @@ test tests::case_sensitive ... ok
 
 test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
-     Running target/debug/deps/minigrep-4672b652f7794785
+     Running unittests (target/debug/deps/minigrep-9cd200e5fac0fc94)
 
 running 0 tests
 

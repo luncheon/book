@@ -223,7 +223,7 @@ error[E0277]: can't compare `{integer}` with `&amp;{integer}`
   |     ^^^^^^^^^^^^^^^^^ no implementation for `{integer} == &amp;{integer}`
   |
   = help: the trait `PartialEq&lt;&amp;{integer}&gt;` is not implemented for `{integer}`
-  = note: this error originates in a macro (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the macro `assert_eq` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error: aborting due to previous error
 
@@ -392,7 +392,7 @@ Listing 15-9.</p>
 and methods. Deref coercion works only on types that implement the <code>Deref</code>
 trait. Deref coercion converts such a type into a reference to another type.
 For example, deref coercion can convert <code>&amp;String</code> to <code>&amp;str</code> because <code>String</code>
-implements the <code>Deref</code> trait such that it returns <code>str</code>. Deref coercion happens
+implements the <code>Deref</code> trait such that it returns <code>&amp;str</code>. Deref coercion happens
 automatically when we pass a reference to a particular type’s value as an
 argument to a function or method that doesn’t match the parameter type in the
 function or method definition. A sequence of calls to the <code>deref</code> method

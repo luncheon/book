@@ -175,7 +175,8 @@
 <p>Cargo is Rust’s build system and package manager. Most Rustaceans use this tool
 to manage their Rust projects because Cargo handles a lot of tasks for you,
 such as building your code, downloading the libraries your code depends on, and
-building those libraries. (We call libraries your code needs <em>dependencies</em>.)</p>
+building those libraries. (We call the libraries that your code needs
+<em>dependencies</em>.)</p>
 <p>The simplest Rust programs, like the one we’ve written so far, don’t have any
 dependencies. So if we had built the “Hello, world!” project with Cargo, it
 would only use the part of Cargo that handles building your code. As you write
@@ -219,7 +220,6 @@ code in Listing 1-2.</p>
 <pre><code class="language-toml">[package]
 name = &quot;hello_cargo&quot;
 version = &quot;0.1.0&quot;
-authors = [&quot;Your Name &lt;you@example.com&gt;&quot;]
 edition = &quot;2018&quot;
 
 [dependencies]
@@ -230,11 +230,9 @@ Minimal Language</em>) format, which is Cargo’s configuration format.</p>
 <p>The first line, <code>[package]</code>, is a section heading that indicates that the
 following statements are configuring a package. As we add more information to
 this file, we’ll add other sections.</p>
-<p>The next four lines set the configuration information Cargo needs to compile
-your program: the name, the version, who wrote it, and the edition of Rust to
-use. Cargo gets your name and email information from your environment, so if
-that information is not correct, fix the information now and then save the
-file. We’ll talk about the <code>edition</code> key in Appendix E.</p>
+<p>The next three lines set the configuration information Cargo needs to compile
+your program: the name, the version, and the edition of Rust to use. We’ll talk
+about the <code>edition</code> key in <a href="appendix-05-editions.html">Appendix E</a><!-- ignore -->.</p>
 <p>The last line, <code>[dependencies]</code>, is the start of a section for you to list any
 of your project’s dependencies. In Rust, packages of code are referred to as
 <em>crates</em>. We won’t need any other crates for this project, but we will in the

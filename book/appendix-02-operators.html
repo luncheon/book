@@ -194,7 +194,7 @@ overload that operator is listed.</p>
 <tr><td><code>&amp;&amp;</code></td><td><code>expr &amp;&amp; expr</code></td><td>Short-circuiting logical AND</td><td></td></tr>
 <tr><td><code>*</code></td><td><code>expr * expr</code></td><td>Arithmetic multiplication</td><td><code>Mul</code></td></tr>
 <tr><td><code>*=</code></td><td><code>var *= expr</code></td><td>Arithmetic multiplication and assignment</td><td><code>MulAssign</code></td></tr>
-<tr><td><code>*</code></td><td><code>*expr</code></td><td>Dereference</td><td></td></tr>
+<tr><td><code>*</code></td><td><code>*expr</code></td><td>Dereference</td><td><code>Deref</code></td></tr>
 <tr><td><code>*</code></td><td><code>*const type</code>, <code>*mut type</code></td><td>Raw pointer</td><td></td></tr>
 <tr><td><code>+</code></td><td><code>trait + trait</code>, <code>'a + trait</code></td><td>Compound type constraint</td><td></td></tr>
 <tr><td><code>+</code></td><td><code>expr + expr</code></td><td>Arithmetic addition</td><td><code>Add</code></td></tr>
@@ -205,11 +205,11 @@ overload that operator is listed.</p>
 <tr><td><code>-=</code></td><td><code>var -= expr</code></td><td>Arithmetic subtraction and assignment</td><td><code>SubAssign</code></td></tr>
 <tr><td><code>-&gt;</code></td><td><code>fn(...) -&gt; type</code>, <code>|...| -&gt; type</code></td><td>Function and closure return type</td><td></td></tr>
 <tr><td><code>.</code></td><td><code>expr.ident</code></td><td>Member access</td><td></td></tr>
-<tr><td><code>..</code></td><td><code>..</code>, <code>expr..</code>, <code>..expr</code>, <code>expr..expr</code></td><td>Right-exclusive range literal</td><td></td></tr>
-<tr><td><code>..=</code></td><td><code>..=expr</code>, <code>expr..=expr</code></td><td>Right-inclusive range literal</td><td></td></tr>
+<tr><td><code>..</code></td><td><code>..</code>, <code>expr..</code>, <code>..expr</code>, <code>expr..expr</code></td><td>Right-exclusive range literal</td><td><code>PartialOrd</code></td></tr>
+<tr><td><code>..=</code></td><td><code>..=expr</code>, <code>expr..=expr</code></td><td>Right-inclusive range literal</td><td><code>PartialOrd</code></td></tr>
 <tr><td><code>..</code></td><td><code>..expr</code></td><td>Struct literal update syntax</td><td></td></tr>
 <tr><td><code>..</code></td><td><code>variant(x, ..)</code>, <code>struct_type { x, .. }</code></td><td>“And the rest” pattern binding</td><td></td></tr>
-<tr><td><code>...</code></td><td><code>expr...expr</code></td><td>In a pattern: inclusive range pattern</td><td></td></tr>
+<tr><td><code>...</code></td><td><code>expr...expr</code></td><td>(Deprecated, use <code>..=</code> instead) In a pattern: inclusive range pattern</td><td></td></tr>
 <tr><td><code>/</code></td><td><code>expr / expr</code></td><td>Arithmetic division</td><td><code>Div</code></td></tr>
 <tr><td><code>/=</code></td><td><code>var /= expr</code></td><td>Arithmetic division and assignment</td><td><code>DivAssign</code></td></tr>
 <tr><td><code>:</code></td><td><code>pat: type</code>, <code>ident: type</code></td><td>Constraints</td><td></td></tr>

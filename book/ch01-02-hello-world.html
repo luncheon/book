@@ -265,7 +265,8 @@ screen. There are four important details to notice here.</p>
 <p>Second, <code>println!</code> calls a Rust macro. If it called a function instead, it
 would be entered as <code>println</code> (without the <code>!</code>). We’ll discuss Rust macros in
 more detail in Chapter 19. For now, you just need to know that using a <code>!</code>
-means that you’re calling a macro instead of a normal function.</p>
+means that you’re calling a macro instead of a normal function, and that macros
+don't always follow the same rules as functions.</p>
 <p>Third, you see the <code>&quot;Hello, world!&quot;</code> string. We pass this string as an argument
 to <code>println!</code>, and the string is printed to the screen.</p>
 <p>Fourth, we end the line with a semicolon (<code>;</code>), which indicates that this

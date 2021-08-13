@@ -248,10 +248,11 @@ pub fn eat_at_restaurant() {
 into scope with <code>use</code>, which is unidiomatic</span></p>
 <p>Although both Listing 7-11 and 7-13 accomplish the same task, Listing 7-11 is
 the idiomatic way to bring a function into scope with <code>use</code>. Bringing the
-function’s parent module into scope with <code>use</code> so we have to specify the parent
-module when calling the function makes it clear that the function isn’t locally
-defined while still minimizing repetition of the full path. The code in Listing
-7-13 is unclear as to where <code>add_to_waitlist</code> is defined.</p>
+function’s parent module into scope with <code>use</code> means we have to specify the
+parent module when calling the function. Specifying the parent module when
+calling the function makes it clear that the function isn’t locally defined
+while still minimizing repetition of the full path. The code in Listing 7-13 is
+unclear as to where <code>add_to_waitlist</code> is defined.</p>
 <p>On the other hand, when bringing in structs, enums, and other items with <code>use</code>,
 it’s idiomatic to specify the full path. Listing 7-14 shows the idiomatic way
 to bring the standard library’s <code>HashMap</code> struct into the scope of a binary
@@ -365,8 +366,7 @@ added this line to <em>Cargo.toml</em>:</p>
 * ch14-03-cargo-workspaces.md
 -->
 <p><span class="filename">Filename: Cargo.toml</span></p>
-<pre><code class="language-toml">[dependencies]
-rand = &quot;0.8.3&quot;
+<pre><code class="language-toml">rand = &quot;0.8.3&quot;
 </code></pre>
 <p>Adding <code>rand</code> as a dependency in <em>Cargo.toml</em> tells Cargo to download the
 <code>rand</code> package and any dependencies from <a href="https://crates.io/">crates.io</a> and

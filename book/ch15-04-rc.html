@@ -180,9 +180,9 @@ that point to it. A node shouldn’t be cleaned up unless it doesn’t have any
 edges pointing to it.</p>
 <p>To enable multiple ownership, Rust has a type called <code>Rc&lt;T&gt;</code>, which is an
 abbreviation for <em>reference counting</em>. The <code>Rc&lt;T&gt;</code> type keeps track of the
-number of references to a value which determines whether or not a value is
-still in use. If there are zero references to a value, the value can be cleaned
-up without any references becoming invalid.</p>
+number of references to a value to determine whether or not the value is still
+in use. If there are zero references to a value, the value can be cleaned up
+without any references becoming invalid.</p>
 <p>Imagine <code>Rc&lt;T&gt;</code> as a TV in a family room. When one person enters to watch TV,
 they turn it on. Others can come into the room and watch the TV. When the last
 person leaves the room, they turn off the TV because it’s no longer being used.

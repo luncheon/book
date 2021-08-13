@@ -307,8 +307,8 @@ fix some of these edge cases. After that update, <code>macro_rules!</code> will 
 effectively deprecated. With this in mind, as well as the fact that most Rust
 programmers will <em>use</em> macros more than <em>write</em> macros, we won’t discuss
 <code>macro_rules!</code> any further. To learn more about how to write macros, consult
-the online documentation or other resources, such as <a href="https://danielkeep.github.io/tlborm/book/index.html">“The Little Book of Rust
-Macros”</a>.</p>
+the online documentation or other resources, such as <a href="https://veykril.github.io/tlborm/">“The Little Book of Rust
+Macros”</a> started by Daniel Keep and continued by Lukas Wirth.</p>
 <h3><a class="header" href="#procedural-macros-for-generating-code-from-attributes" id="procedural-macros-for-generating-code-from-attributes">Procedural Macros for Generating Code from Attributes</a></h3>
 <p>The second form of macros is <em>procedural macros</em>, which act more like functions
 (and are a type of procedure). Procedural macros accept some code as an input,
@@ -420,8 +420,7 @@ We’ll also need functionality from the <code>syn</code> and <code>quote</code>
 in a moment, so we need to add them as dependencies. Add the following to the
 <em>Cargo.toml</em> file for <code>hello_macro_derive</code>:</p>
 <p><span class="filename">Filename: hello_macro_derive/Cargo.toml</span></p>
-<pre><code class="language-toml">[lib]
-proc-macro = true
+<pre><code class="language-toml">proc-macro = true
 
 [dependencies]
 syn = &quot;1.0&quot;
@@ -584,8 +583,7 @@ your <em>projects</em> directory using <code>cargo new pancakes</code>. We need 
 crate’s <em>Cargo.toml</em>. If you’re publishing your versions of <code>hello_macro</code> and
 <code>hello_macro_derive</code> to <a href="https://crates.io/">crates.io</a>, they would be regular
 dependencies; if not, you can specify them as <code>path</code> dependencies as follows:</p>
-<pre><code class="language-toml">[dependencies]
-hello_macro = { path = &quot;../hello_macro&quot; }
+<pre><code class="language-toml">hello_macro = { path = &quot;../hello_macro&quot; }
 hello_macro_derive = { path = &quot;../hello_macro/hello_macro_derive&quot; }
 </code></pre>
 <p>Put the code in Listing 19-30 into <em>src/main.rs</em>, and run <code>cargo run</code>: it

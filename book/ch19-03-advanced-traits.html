@@ -277,7 +277,7 @@ struct:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
 <pre><pre class="playground"><code class="language-rust">use std::ops::Add;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 struct Point {
     x: i32,
     y: i32,
@@ -331,9 +331,12 @@ wanted to add two <code>Point</code> instances. Let’s look at an example of im
 the <code>Add</code> trait where we want to customize the <code>Rhs</code> type rather than using the
 default.</p>
 <p>We have two structs, <code>Millimeters</code> and <code>Meters</code>, holding values in different
-units. We want to add values in millimeters to values in meters and have the
-implementation of <code>Add</code> do the conversion correctly. We can implement <code>Add</code> for
-<code>Millimeters</code> with <code>Meters</code> as the <code>Rhs</code>, as shown in Listing 19-15.</p>
+units. This thin wrapping of an existing type in another struct is known as the
+<em>newtype pattern</em>, which we describe in more detail in the <a href="ch19-04-advanced-types.html#using-the-newtype-pattern-for-type-safety-and-abstraction">“Using the Newtype
+Pattern to Implement External Traits on External Types”</a><!-- ignore
+--> section. We want to add values in millimeters to values in meters and have
+the implementation of <code>Add</code> do the conversion correctly. We can implement <code>Add</code>
+for <code>Millimeters</code> with <code>Meters</code> as the <code>Rhs</code>, as shown in Listing 19-15.</p>
 <p><span class="filename">Filename: src/lib.rs</span></p>
 <pre><code class="language-rust noplayground">use std::ops::Add;
 

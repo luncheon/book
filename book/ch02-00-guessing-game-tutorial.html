@@ -196,15 +196,12 @@ directory.</p>
 <pre><code class="language-toml">[package]
 name = &quot;guessing_game&quot;
 version = &quot;0.1.0&quot;
-authors = [&quot;Your Name &lt;you@example.com&gt;&quot;]
 edition = &quot;2018&quot;
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 </code></pre>
-<p>If the author information that Cargo obtained from your environment is not
-correct, fix that in the file and save it again.</p>
 <p>As you saw in Chapter 1, <code>cargo new</code> generates a “Hello, world!” program for
 you. Check out the <em>src/main.rs</em> file:</p>
 <p><span class="filename">Filename: src/main.rs</span></p>
@@ -334,16 +331,15 @@ from the user.</p>
 <p>Now the program is getting interesting! There’s a lot going on in this little
 line. Notice that this is a <code>let</code> statement, which is used to create a
 <em>variable</em>. Here’s another example:</p>
-<pre><code class="language-rust ignore">let foo = bar;
+<pre><code class="language-rust ignore">let apples = 5;
 </code></pre>
-<p>This line creates a new variable named <code>foo</code> and binds it to the value of the
-<code>bar</code> variable. In Rust, variables are immutable by default. We’ll be
-discussing this concept in detail in the <a href="ch03-01-variables-and-mutability.html#variables-and-mutability">“Variables and
-Mutability”</a><!-- ignore --> section in Chapter 3.
-The following example shows how to use <code>mut</code> before the variable name to make
-a variable mutable:</p>
-<pre><code class="language-rust ignore">let foo = 5; // immutable
-let mut bar = 5; // mutable
+<p>This line creates a new variable named <code>apples</code> and binds it to the value 5. In
+Rust, variables are immutable by default. We’ll be discussing this concept in
+detail in the <a href="ch03-01-variables-and-mutability.html#variables-and-mutability">“Variables and Mutability”</a><!-- ignore
+--> section in Chapter 3. The following example shows how to use <code>mut</code> before
+the variable name to make a variable mutable:</p>
+<pre><code class="language-rust ignore">let apples = 5; // immutable
+let mut bananas = 5; // mutable
 </code></pre>
 <blockquote>
 <p>Note: The <code>//</code> syntax starts a comment that continues until the end of the
@@ -357,9 +353,8 @@ calling <code>String::new</code>, a function that returns a new instance of a <c
 <a href="../std/string/struct.String.html"><code>String</code></a><!-- ignore --> is a string type provided by the standard
 library that is a growable, UTF-8 encoded bit of text.</p>
 <p>The <code>::</code> syntax in the <code>::new</code> line indicates that <code>new</code> is an <em>associated
-function</em> of the <code>String</code> type. An associated function is implemented on a type,
-in this case <code>String</code>, rather than on a particular instance of a <code>String</code>. Some
-languages call this a <em>static method</em>.</p>
+function</em> of the <code>String</code> type. An associated function is implemented on a
+type, in this case <code>String</code>.</p>
 <p>This <code>new</code> function creates a new, empty string. You’ll find a <code>new</code> function
 on many types, because it’s a common name for a function that makes a new value
 of some kind.</p>
@@ -424,9 +419,9 @@ is this method:</p>
 </span><span class="boring">    println!(&quot;You guessed: {}&quot;, guess);
 </span><span class="boring">}
 </span></code></pre>
-<p>When you call a method with the <code>.foo()</code> syntax, it’s often wise to introduce a
-newline and other whitespace to help break up long lines. We could have
-written this code as:</p>
+<p>When you call a method with the <code>.method_name()</code> syntax, it’s often wise to
+introduce a newline and other whitespace to help break up long lines. We could
+have written this code as:</p>
 <pre><code class="language-rust ignore">io::stdin().read_line(&amp;mut guess).expect(&quot;Failed to read line&quot;);
 </code></pre>
 <p>However, one long line is difficult to read, so it’s best to divide it. Now
@@ -536,24 +531,23 @@ than once. Let’s use a random number between 1 and 100 so the game isn’t too
 difficult. Rust doesn’t yet include random number functionality in its standard
 library. However, the Rust team does provide a <a href="https://crates.io/crates/rand"><code>rand</code> crate</a>.</p>
 <h3><a class="header" href="#using-a-crate-to-get-more-functionality" id="using-a-crate-to-get-more-functionality">Using a Crate to Get More Functionality</a></h3>
-<p>Remember that a crate is a collection of Rust source code files.
-The project we’ve been building is a <em>binary crate</em>, which is an executable.
-The <code>rand</code> crate is a <em>library crate</em>, which contains code intended to be
-used in other programs.</p>
-<p>Cargo’s use of external crates is where it really shines. Before we can write
-code that uses <code>rand</code>, we need to modify the <em>Cargo.toml</em> file to include the
-<code>rand</code> crate as a dependency. Open that file now and add the following line to
-the bottom beneath the <code>[dependencies]</code> section header that Cargo created for
-you. Be sure to specify <code>rand</code> exactly as we have here, or the code examples in
-this tutorial may not work.</p>
+<p>Remember that a crate is a collection of Rust source code files. The project
+we’ve been building is a <em>binary crate</em>, which is an executable. The <code>rand</code>
+crate is a <em>library crate</em>, which contains code intended to be used in other
+programs.</p>
+<p>Cargo’s coordination of external crates is where Cargo really shines. Before we
+can write code that uses <code>rand</code>, we need to modify the <em>Cargo.toml</em> file to
+include the <code>rand</code> crate as a dependency. Open that file now and add the
+following line to the bottom beneath the <code>[dependencies]</code> section header that
+Cargo created for you. Be sure to specify <code>rand</code> exactly as we have here, or
+the code examples in this tutorial may not work.</p>
 <!-- When updating the version of `rand` used, also update the version of
 `rand` used in these files so they all match:
 * ch07-04-bringing-paths-into-scope-with-the-use-keyword.md
 * ch14-03-cargo-workspaces.md
 -->
 <p><span class="filename">Filename: Cargo.toml</span></p>
-<pre><code class="language-toml">[dependencies]
-rand = &quot;0.8.3&quot;
+<pre><code class="language-toml">rand = &quot;0.8.3&quot;
 </code></pre>
 <p>In the <em>Cargo.toml</em> file, everything that follows a header is part of a section
 that continues until another section starts. The <code>[dependencies]</code> section is
@@ -631,9 +625,9 @@ your part of the code.</p>
 <p>Cargo has a mechanism that ensures you can rebuild the same artifact every time
 you or anyone else builds your code: Cargo will use only the versions of the
 dependencies you specified until you indicate otherwise. For example, what
-happens if next week version 0.8.4 of the <code>rand</code> crate comes out and
-contains an important bug fix but also contains a regression that will break
-your code?</p>
+happens if next week version 0.8.4 of the <code>rand</code> crate comes out, and that
+version contains an important bug fix, but it also contains a regression that
+will break your code?</p>
 <p>The answer to this problem is the <em>Cargo.lock</em> file, which was created the
 first time you ran <code>cargo build</code> and is now in your <em>guessing_game</em> directory.
 When you build a project for the first time, Cargo figures out all the
@@ -1142,11 +1136,11 @@ is converted from a <code>String</code> to a <code>u32</code>, as shown in Listi
 </span></code></pre>
 <p><span class="caption">Listing 2-5: Ignoring a non-number guess and asking for
 another guess instead of crashing the program</span></p>
-<p>Switching from an <code>expect</code> call to a <code>match</code> expression is how you generally
-move from crashing on an error to handling the error. Remember that <code>parse</code>
-returns a <code>Result</code> type and <code>Result</code> is an enum that has the variants <code>Ok</code> or
-<code>Err</code>. We’re using a <code>match</code> expression here, as we did with the <code>Ordering</code>
-result of the <code>cmp</code> method.</p>
+<p>Switching from an <code>expect</code> call to a <code>match</code> expression is one way of moving
+from crashing on an error to handling the error. Remember that <code>parse</code> returns
+a <code>Result</code> type and <code>Result</code> is an enum that has the variants <code>Ok</code> or <code>Err</code>.
+We’re using a <code>match</code> expression here, as we did with the <code>Ordering</code> result of
+the <code>cmp</code> method.</p>
 <p>If <code>parse</code> is able to successfully turn the string into a number, it will
 return an <code>Ok</code> value that contains the resulting number. That <code>Ok</code> value will
 match the first arm’s pattern, and the <code>match</code> expression will just return the
@@ -1236,13 +1230,12 @@ fn main() {
 <h2><a class="header" href="#summary" id="summary">Summary</a></h2>
 <p>At this point, you’ve successfully built the guessing game. Congratulations!</p>
 <p>This project was a hands-on way to introduce you to many new Rust concepts:
-<code>let</code>, <code>match</code>, methods, associated functions, the use of external crates, and
-more. In the next few chapters, you’ll learn about these concepts in more
-detail. Chapter 3 covers concepts that most programming languages have, such as
-variables, data types, and functions, and shows how to use them in Rust.
-Chapter 4 explores ownership, a feature that makes Rust different from other
-languages. Chapter 5 discusses structs and method syntax, and Chapter 6
-explains how enums work.</p>
+<code>let</code>, <code>match</code>, functions, the use of external crates, and more. In the next
+few chapters, you’ll learn about these concepts in more detail. Chapter 3
+covers concepts that most programming languages have, such as variables, data
+types, and functions, and shows how to use them in Rust. Chapter 4 explores
+ownership, a feature that makes Rust different from other languages. Chapter 5
+discusses structs and method syntax, and Chapter 6 explains how enums work.</p>
 
                     </main>
 
