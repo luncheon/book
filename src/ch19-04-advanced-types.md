@@ -208,7 +208,7 @@ and Rust requires that `guess` have only one type. So what does `continue`
 return? How were we allowed to return a `u32` from one arm and have another arm
 that ends with `continue` in Listing 19-26?
 
-> このコードの `guess` の型は整数 **かつ** 文字列でなければなりませんが、 Rust では `guess` の型は 1 つだけでなければなりません。では `continue` は何を返すのでしょうか。リスト19-26で、あるアームから`u32`を返し、 `continue` で終わる別のアームを持つことが許されたのはなぜでしょうか。
+> このコードの `guess` の型は整数 **と** 文字列でなければなりませんが、 Rust では `guess` の型は 1 つだけでなければなりません。では `continue` は何を返すのでしょうか。リスト19-26で、あるアームから`u32`を返し、 `continue` で終わる別のアームを持つことが許されたのはなぜでしょうか。
 
 As you might have guessed, `continue` has a `!` value. That is, when Rust
 computes the type of `guess`, it looks at both match arms, the former with a

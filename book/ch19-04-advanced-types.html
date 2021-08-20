@@ -469,7 +469,7 @@ and Rust requires that <code>guess</code> have only one type. So what does <code
 return? How were we allowed to return a <code>u32</code> from one arm and have another arm
 that ends with <code>continue</code> in Listing 19-26?</p>
 <blockquote>
-<p>このコードの <code>guess</code> の型は整数 <strong>かつ</strong> 文字列でなければなりませんが、 Rust では <code>guess</code> の型は 1 つだけでなければなりません。では <code>continue</code> は何を返すのでしょうか。リスト19-26で、あるアームから<code>u32</code>を返し、 <code>continue</code> で終わる別のアームを持つことが許されたのはなぜでしょうか。</p>
+<p>このコードの <code>guess</code> の型は整数 <strong>と</strong> 文字列でなければなりませんが、 Rust では <code>guess</code> の型は 1 つだけでなければなりません。では <code>continue</code> は何を返すのでしょうか。リスト19-26で、あるアームから<code>u32</code>を返し、 <code>continue</code> で終わる別のアームを持つことが許されたのはなぜでしょうか。</p>
 </blockquote>
 <p>As you might have guessed, <code>continue</code> has a <code>!</code> value. That is, when Rust
 computes the type of <code>guess</code>, it looks at both match arms, the former with a
